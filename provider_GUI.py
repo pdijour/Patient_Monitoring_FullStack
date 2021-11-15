@@ -3,6 +3,17 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 
 
+def load_and_resize_image(filename):
+    pil_image = Image.open(filename)
+    original_size = pil_image.size
+    adj_factor = 0.5
+    new_width = round(original_size[0] * adj_factor)
+    new_height = round(original_size[1] * adj_factor)
+    resized_image = pil_image.resize((new_width, new_height))
+    tk_image = ImageTk.PhotoImage(resized_image)
+    return tk_image
+
+
 def design_window():
 
     def cancel_cmd():
@@ -75,6 +86,18 @@ def design_window():
     variable3.set("tachycardic 11-01-2021")
     record_selector = tk.OptionMenu(root, variable3, *medical_image_options)
     record_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
+
+    tk_image = load_and_resize_image("images/acl1.jpg")
+    image_label = ttk.Label(root, image=tk_image)
+    image_label.grid(column=3, row=1)
+
+    tk_image2 = load_and_resize_image("images/test_ECG.jpg")
+    image_label2 = ttk.Label(root, image=tk_image2)
+    image_label2.grid(column=0, row=7)
+
+    tk_image3 = load_and_resize_image("images/test_tachycardia.jpg")
+    image_label3 = ttk.Label(root, image=tk_image3)
+    image_label3.grid(column=3, row=7)
 
     root.mainloop()
 
