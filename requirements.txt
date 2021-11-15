@@ -1,0 +1,13 @@
+pytest
+pytest-pycodestyle
+requests
+flask
+pillow
+pymodm
+dnspython
+numpy
+matplotlib
+pandas
+scipy
+datetime
+testfixtures
