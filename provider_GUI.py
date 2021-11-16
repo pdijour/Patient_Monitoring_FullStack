@@ -104,13 +104,16 @@ def design_window():
     image_label3 = ttk.Label(root, image=tk_image3)
     image_label3.grid(column=3, row=7, columnspan=2)
 
-    save_last_ecg_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_last_ecg_button = ttk.Button(root, text="Save",
+                                      command=Save_button_cmd)
     save_last_ecg_button.grid(column=0, row=8, columnspan=2)
 
-    save_selected_ecg_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_selected_ecg_button = ttk.Button(root, text="Save",
+                                          command=Save_button_cmd)
     save_selected_ecg_button.grid(column=3, row=8, columnspan=2)
 
-    save_medical_image_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_medical_image_button = ttk.Button(root, text="Save",
+                                           command=Save_button_cmd)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
     root.mainloop()
@@ -118,4 +121,3 @@ def design_window():
 
 if __name__ == '__main__':
     design_window()
-
