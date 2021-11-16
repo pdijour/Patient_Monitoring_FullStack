@@ -14,12 +14,17 @@ def load_and_resize_image(filename):
     return tk_image
 
 
+def Save_button_cmd():
+    return "Saved!"
+
+
 def design_window():
 
     def cancel_cmd():
         root.destroy()
 
     root = tk.Tk()
+    root.configure(background="#ececec")
     root.title("Monitoring Station GUI")
 
     ttk.Label(root, text="Select Patient Medical Record Number")\
@@ -31,40 +36,40 @@ def design_window():
     record_selector.grid(column=1, row=0, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Patient Name") \
-        .grid(column=0, row=3, sticky='w', padx=20, pady=20)
+        .grid(column=0, row=2, sticky='w', padx=20, pady=20)
 
     name_data = tk.StringVar()
     name_display_box = ttk.Entry(root, textvariable=name_data)
     name_display_box.insert(0, "Yume Choi")
     name_display_box.config(state='readonly')
-    name_display_box.grid(column=1, row=3, sticky='w', padx=20, pady=20)
+    name_display_box.grid(column=1, row=2, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Medical Record Number")\
-        .grid(column=0, row=4, sticky='w', padx=20, pady=20)
+        .grid(column=0, row=3, sticky='w', padx=20, pady=20)
 
     number_data = tk.StringVar()
     number_display_box = ttk.Entry(root, textvariable=number_data)
     number_display_box.insert(0, "1")
     number_display_box.config(state='readonly')
-    number_display_box.grid(column=1, row=4, sticky='w', padx=20, pady=20)
+    number_display_box.grid(column=1, row=3, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Latest Heart Rate")\
-        .grid(column=0, row=5, sticky='w', padx=20, pady=20)
+        .grid(column=0, row=4, sticky='w', padx=20, pady=20)
 
-    HR_data = tk.StringVar()
-    HR_display_box = ttk.Entry(root, textvariable=HR_data)
-    HR_display_box.insert(0, "60")
-    HR_display_box.config(state='readonly')
-    HR_display_box.grid(column=1, row=5, sticky='w', padx=20, pady=20)
+    hr_data = tk.StringVar()
+    hr_display_box = ttk.Entry(root, textvariable=hr_data)
+    hr_display_box.insert(0, "60")
+    hr_display_box.config(state='readonly')
+    hr_display_box.grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Latest ECG Trace")\
         .grid(column=0, row=6, sticky='w', padx=20, pady=20)
 
-    Datetime_data = tk.StringVar()
-    Datetime_display_box = ttk.Entry(root, textvariable=Datetime_data)
-    Datetime_display_box.insert(0, "11-14-2021")
-    Datetime_display_box.config(state='readonly')
-    Datetime_display_box.grid(column=1, row=6, sticky='w', padx=20, pady=20)
+    datetime_data = tk.StringVar()
+    datetime_display_box = ttk.Entry(root, textvariable=datetime_data)
+    datetime_display_box.insert(0, "11-14-2021")
+    datetime_display_box.config(state='readonly')
+    datetime_display_box.grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
     cancel_button = ttk.Button(root, text="Cancel", command=cancel_cmd)
     cancel_button.grid(column=6, row=12)
@@ -89,15 +94,24 @@ def design_window():
 
     tk_image = load_and_resize_image("images/acl1.jpg")
     image_label = ttk.Label(root, image=tk_image)
-    image_label.grid(column=3, row=1)
+    image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     tk_image2 = load_and_resize_image("images/test_ECG.jpg")
     image_label2 = ttk.Label(root, image=tk_image2)
-    image_label2.grid(column=0, row=7)
+    image_label2.grid(column=0, row=7, columnspan=2)
 
-    tk_image3 = load_and_resize_image("images/test_tachycardia.jpg")
+    tk_image3 = load_and_resize_image("images/test_ECG.jpg")
     image_label3 = ttk.Label(root, image=tk_image3)
-    image_label3.grid(column=3, row=7)
+    image_label3.grid(column=3, row=7, columnspan=2)
+
+    save_last_ecg_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_last_ecg_button.grid(column=0, row=8, columnspan=2)
+
+    save_selected_ecg_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_selected_ecg_button.grid(column=3, row=8, columnspan=2)
+
+    save_medical_image_button = ttk.Button(root, text="Save", command=Save_button_cmd)
+    save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
     root.mainloop()
 
