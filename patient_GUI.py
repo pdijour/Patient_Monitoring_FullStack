@@ -15,7 +15,27 @@ def load_and_resize_image(filename):
     return tk_image
 
 
+def change_pic():
+    filename = filedialog.askopenfilename(initialdir="images")
+    if filename == "":
+        messagebox.showinfo("Cancel", "You cancelled the image load")
+        return
+    tk_image = load_and_resize_image(filename)
+    return tk_image
+
+
 def design_window():
+
+    def change_ecg_picture_cmd():
+        tk_image = change_pic()
+        ecg_image_label.configure(image=tk_image)
+        ecg_image_label.image = tk_image
+
+    def change_medical_picture_cmd():
+        tk_image = change_pic()
+        medical_image_label.configure(image=tk_image)
+        medical_image_label.image = tk_image
+
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -45,6 +65,10 @@ def design_window():
     tk_ecg_image = load_and_resize_image("images/test_ECG.jpg")
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=3, columnspan=2, padx=20, pady=20)
+
+    change_picture_btn = ttk.Button(root, text="Change Picture",
+                                    command=change_ecg_picture_cmd)
+    change_picture_btn.grid(column=4, row=2, sticky='w', padx=20, pady=20)
 
     root.mainloop()
 
