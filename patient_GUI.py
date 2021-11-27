@@ -70,6 +70,11 @@ def design_window():
                                     command=change_ecg_picture_cmd)
     change_picture_btn.grid(column=4, row=2, sticky='w', padx=20, pady=20)
 
+    heart_rate = 86
+
+    ttk.Label(root, text="Heart Rate:     {}".format(heart_rate))\
+        .grid(column=3, row=4, columnspan=2, padx=20, pady=20)
+
     root.mainloop()
 
 
