@@ -17,6 +17,18 @@ def initialize_server():
     """
     logging.basicConfig(filename="health_db_server.log", level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://<userid>:<pswd>@bme547.ba348.mongodb.net/health_db"
-            "?retryWrites=true&w=majority")
+    connect("mongodb+srv://pdijour:bme547mongo@bme547.ba348.mongodb.net/"
+            "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
+
+
+@app.route("/", methods=["GET"])
+def status():
+    """Used to indicate that the server is running
+    """
+    return "Server is on"
+
+
+if __name__ == '__main__':
+    initialize_server()
+    app.run()
