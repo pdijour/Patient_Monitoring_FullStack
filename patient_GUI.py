@@ -3,7 +3,9 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
+from ecg_analysis import overall_plotting, overall_rate
 
+# overall_plotting("test_data/test_data1.csv")
 
 def load_and_resize_image(filename):
     pil_image = Image.open(filename)
@@ -16,13 +18,12 @@ def load_and_resize_image(filename):
     return tk_image
 
 
-def change_pic():
-    filename = filedialog.askopenfilename(initialdir="images")
+def change_file(starting):
+    filename = filedialog.askopenfilename(initialdir="{}".format(starting))
     if filename == "":
         messagebox.showinfo("Cancel", "You cancelled the image load")
         return
-    tk_image = load_and_resize_image(filename)
-    return tk_image
+    return filename
 
 
 def Upload_button_cmd():
@@ -42,13 +43,24 @@ def design_window():
     def cancel_cmd():
         root.destroy()
 
+    def plot_ecg():
+        filename = change_file("test_data")
+        overall_plotting(filename)
+        hr = overall_rate(filename)
+        filename_png = "{}.png".format(filename.strip(".csv"))
+        return filename_png, hr
+
     def change_ecg_picture_cmd():
-        tk_image = change_pic()
+        filename_png, hr = plot_ecg()
+        tk_image = load_and_resize_image(filename_png)
         ecg_image_label.configure(image=tk_image)
         ecg_image_label.image = tk_image
+        bpm_label.configure(text=hr)
+        bpm_label.hr = hr
 
     def change_medical_picture_cmd():
-        tk_image = change_pic()
+        filename = change_file("images")
+        tk_image = load_and_resize_image(filename)
         medical_image_label.configure(image=tk_image)
         medical_image_label.image = tk_image
 
@@ -84,18 +96,23 @@ def design_window():
     ttk.Label(root, text="ECG Image")\
         .grid(column=3, row=2, sticky='w', padx=20, pady=20)
 
-    tk_ecg_image = load_and_resize_image("images/test_ECG.jpg")
+    tk_ecg_image = load_and_resize_image("test_data/test_data1.png")
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=3, columnspan=2, padx=20, pady=20)
 
-    change_picture_btn = ttk.Button(root, text="Change Picture",
+    change_picture_btn = ttk.Button(root, text="Choose ECG Data to Display",
                                     command=change_ecg_picture_cmd)
     change_picture_btn.grid(column=4, row=2, sticky='w', padx=20, pady=20)
 
-    heart_rate = 86
+    ttk.Label(root, text="Heart Rate:")\
+        .grid(column=3, row=4, sticky='w', padx=20, pady=20)
 
-    ttk.Label(root, text="Heart Rate:     {}".format(heart_rate))\
-        .grid(column=3, row=4, columnspan=2, padx=20, pady=20)
+    hr = overall_rate("test_data/test_data1.csv")
+
+    # ttk.Label(root, text=hr)\
+    #     .grid(column=4, row=4, sticky='w', padx=20, pady=20)
+    bpm_label = ttk.Label(root, text=hr)
+    bpm_label.grid(column=4, row=4, sticky='w', padx=20, pady=20)
 
     upload_button = ttk.Button(root, text="Upload",
                                command=Upload_button_cmd)
