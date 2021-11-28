@@ -3,7 +3,7 @@
 import pymodm.errors
 from flask import Flask, request, jsonify
 import logging
-from pymodm import connect, MongoModel, fields
+from pymodm import connect
 from database_definitions import Patient
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ def initialize_server():
     This function initializes the server log as well as creates a connection
     with the MongoDB database.
     """
-    logging.basicConfig(filename="health_db_server.log", level=logging.DEBUG)
+    logging.basicConfig(filename="patient_record_server.log", level=logging.DEBUG)
     print("Connecting to MongoDB...")
     connect("mongodb+srv://pdijour:bme547mongo@bme547.ba348.mongodb.net/"
             "final_project?retryWrites=true&w=majority")
