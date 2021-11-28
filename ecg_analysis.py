@@ -111,14 +111,14 @@ def show_peaks(filename, time, voltage, plot):
     it was determined that all peaks are at least 35% of the maximum
     voltage, and peaks are never less than 100 data points away from
     one another. Therefore, these parameters were used in the find_peaks
-    function.
+    function. If the user enters the fourth paramater as "save," the
+    time and voltage data is plotted and saved as a png.
 
     :param filename: string containing file name
     :param time: list of floats containing all time data points
     :param voltage: list of floats containing all filtered voltage data
     points
-    :param plot: boolean where TRUE saves the plotted figure and FALSE
-    does not
+    :param plot: string where "save" saves the plotted figure
 
     :returns: list of floats containing times where peaks occured
     """
@@ -164,12 +164,30 @@ def bpm_calc(duration, num_beats):
 
 
 def overall_plotting(filename):
+    """Plot filtered data beginning from file name
+
+    This code uses the read, filter, and show_peaks functions to go
+    from a file name to a saved figure of the filtered data.
+
+    :param filename: string containing file name
+    """
     time, voltage = read(filename)
     voltage_clean = filter(time, voltage)
     show_peaks(filename, time, voltage_clean, "save")
 
 
 def overall_rate(filename):
+    """Calculate heart rate beginning from file name
+
+    This code uses most of the previous functions, including read,
+    filter, duration_calc, show_peaks, num_peaks, and bpm_calc, to
+    calculate the heart rate of the ECG graph corresponding to the
+    given file name.
+
+    :param filename: string containing file name
+
+    :returns: string containing the heart rate for the chosen ECG
+    """
     time, voltage = read(filename)
     voltage_clean = filter(time, voltage)
     duration = duration_calc(time)
