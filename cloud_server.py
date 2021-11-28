@@ -16,7 +16,8 @@ def initialize_server():
     This function initializes the server log as well as creates a connection
     with the MongoDB database.
     """
-    logging.basicConfig(filename="patient_record_server.log", level=logging.DEBUG)
+    logging.basicConfig(filename="patient_record_server.log",
+                        level=logging.DEBUG)
     print("Connecting to MongoDB...")
     connect("mongodb+srv://pdijour:bme547mongo@bme547.ba348.mongodb.net/"
             "final_project?retryWrites=true&w=majority")
@@ -28,6 +29,7 @@ def status():
     """Used to indicate that the server is running
     """
     return "Server is on"
+
 
 @app.route("/api/new_patient", methods=["POST"])
 def new_patient():
@@ -42,15 +44,17 @@ def new_patient():
                        in_data["ECG_image_file"],
                        in_data["heartrate"],
                        in_data["datetime"])
+    logging.info("Added new patient into database with id: {}"
+                 .format(in_data["record_number"]))
     return "Added patient {}".format(in_data)
 
 
 expected_input = {"patient_name": str,
-                          "record_number": int,
-                          "medical_image_file": str,
-                          "ECG_image_file": str,
-                          "heartrate": int,
-                          "datetime": str}
+                  "record_number": int,
+                  "medical_image_file": str,
+                  "ECG_image_file": str,
+                  "heartrate": int,
+                  "datetime": str}
 
 
 def validate_input(in_data, expected_input):
@@ -156,7 +160,7 @@ def add_database_entry(patient_name, id_no, medical_files,
                              medical_record_number=id_no,
                              medical_images=medical_files,
                              ecg_images=ecg_files,
-                             heartrates=bpms,
+                             heart_rates=bpms,
                              datetimes=timestamps)
     answer = patient_to_add.save()
     return answer
@@ -167,8 +171,6 @@ def find_patient(id_no):
         patient = Patient.objects.raw({"_id": id_no}).first()
     except pymodm.errors.DoesNotExist:
         patient = False
-    logging.info("Added new patient into database with id: {}"
-        .format(patient["patient_id"]))
     return patient
 
 

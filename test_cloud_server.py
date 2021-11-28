@@ -167,7 +167,8 @@ def test_validate_input(in_data, expected_input, expected_val, expected_code):
 def test_add_database_entry():
     from cloud_server import add_database_entry
     expected_name = "David Testing"
-    answer = add_database_entry(expected_name, 5, "O+")
+    answer = add_database_entry(expected_name, 5, "1.png", "2.png", 86,
+                                "2020-03-09 11:00:36")
     answer.delete()
     assert answer.name == expected_name
 
@@ -177,15 +178,17 @@ def test_find_patient():
     from cloud_server import add_database_entry
     expected_name = "Yume Choi"
     expected_id = 32
-    entry_to_delete = add_database_entry(expected_name, expected_id, "O+")
+    entry_to_delete = add_database_entry(expected_name, expected_id, "1.png",
+                                         "2.png", 86, "2020-03-09 11:00:36")
     answer = find_patient(expected_id)
     entry_to_delete.delete()
     assert answer.id == expected_id
     assert answer.name == expected_name
 
 
-def test_add_patient_database_entry_is_made():
-    from cloud_server import add_patient_database_entry
+def test_add_database_entry_is_made():
+    from cloud_server import add_database_entry
     with LogCapture() as log_c:
-        add_patient_database_entry(5, "Choi.Y", 55)
+        add_database_entry("Choi.Y", 5, "1.png", "2.png", 86,
+                           "2020-03-09 11:00:36")
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"))
