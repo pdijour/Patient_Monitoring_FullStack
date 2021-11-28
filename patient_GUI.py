@@ -5,7 +5,6 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 from ecg_analysis import overall_plotting, overall_rate
 
-# overall_plotting("test_data/test_data1.csv")
 
 def load_and_resize_image(filename):
     pil_image = Image.open(filename)
