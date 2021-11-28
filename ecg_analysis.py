@@ -163,32 +163,6 @@ def bpm_calc(duration, num_beats):
     return bpm
 
 
-def create_dict(filename, duration, min, max, num_beats, bpm, time_peaks):
-    """Create dictionary of ECG metrics and output to JSON file
-
-    This code creates a dictionary of metrics, including time duration,
-    voltage extremes, number of beats, mean heartrate, times of beats. It
-    dumps this dictionary into a JSON file that has the same name as the
-    ECG data file, but with an extension of .json. It also logs when a
-    dictionary entry is assigned.
-
-    :param filename: string containing ECG data file name
-    :param duration: float containing time duration of ECG strip
-    :param min: float containing minimum voltage value of ECG strip
-    :param max: float containing maximum voltage value of ECG strip
-    :param num_beats: int containing number of beats in ECG strip
-    :param bpm: float containing heartrate of ECG strip in bpm
-    :param time_peaks: list of floats containing times where peaks occured
-    """
-    metrics = {"duration": duration, "voltage_extremes": (min, max),
-               "num_beats": num_beats, "mean_hr_bpm": bpm,
-               "beats": time_peaks}
-    filename = "{}.json".format(filename.strip(".csv"))
-    logging.info("Assigning Dictionary Entry")
-    with open(filename, 'w') as out_file:
-        json.dump(metrics, out_file)
-
-
 def overall_plotting(filename):
     time, voltage = read(filename)
     voltage_clean = filter(time, voltage)
