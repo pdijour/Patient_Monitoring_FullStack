@@ -48,7 +48,7 @@ def new_patient():
                            in_data["datetimes"])
         logging.info("Added new patient into database with id: {}"
                      .format(in_data["record_number"]))
-        return "Added patient {}".format(in_data)
+        return "Added patient {}".format(in_data["record_number"])
     else:
         # Patient already exists in database
         add_patient_file(in_data["patient_name"],
@@ -120,9 +120,10 @@ def validate_input(in_data, expected_input):
         if key not in in_data:
             return "The key {} is missing from input".format(key), 400
         if expected_input[key] == int:
-            val = check_int(in_data, key)
-            if type(val) == str:
-                return val, 400
+            if in_data[key] != "":
+                val = check_int(in_data, key)
+                if type(val) == str:
+                    return val, 400
         else:
             if type(in_data[key]) is not expected_input[key]:
                 return "The key {} has the wrong data type".format(key), 400
@@ -171,6 +172,8 @@ def check_int(in_data, key):
 
 def add_database_entry(patient_name, id_no, medical_file,
                        ecg_file, bpm, timestamp):
+    if patient_name == "":
+        patient_name = "N/A"
     patient_to_add = Patient(name=patient_name,
                              medical_record_number=id_no)
     patient_to_add.medical_images.append(medical_file)
@@ -192,22 +195,19 @@ def find_patient(id_no):
 def add_patient_file(patient_name, id_no, medical_file,
                      ecg_file, bpm, timestamp):
     patient = find_patient(id_no)
-    print(patient.datetimes)
-    patient.datetimes.append(timestamp)
-    print(patient.datetimes)
-    # if patient_name != "":
-    #     if patient_name != patient.name:
-    #         logging.warning("Entered patient name does not match"
-    #                         "records for {}. Patient name will now"
-    #                         "be set to {}".format(id_no, patient_name))
-    #         patient.name = patient_name
-    # if medical_file != "":
-    #     patient.medical_images.append(medical_file)
-    # if ecg_file != "":
-    #     patient.ecg_images.append(ecg_file)
-    # if bpm != "":
-    #     patient.heart_rates.append(bpm)
-    #     patient.datetimes.append(timestamp)
+    if patient_name != "":
+        if patient_name != patient.name:
+            logging.warning("Entered patient name does not match "
+                            "records for {}. Patient name will now "
+                            "be set to {}".format(id_no, patient_name))
+            patient.name = patient_name
+    if medical_file != "":
+        patient.medical_images.append(medical_file)
+    if ecg_file != "":
+        patient.ecg_images.append(ecg_file)
+    if bpm != "":
+        patient.heart_rates.append(bpm)
+        patient.datetimes.append(timestamp)
     patient.save()
     return patient
 
