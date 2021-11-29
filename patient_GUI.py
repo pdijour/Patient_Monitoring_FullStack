@@ -19,9 +19,6 @@ def load_and_resize_image(filename):
 
 def change_file(starting):
     filename = filedialog.askopenfilename(initialdir="{}".format(starting))
-    if filename == "":
-        messagebox.showinfo("Cancel", "You cancelled the image load")
-        return
     return filename
 
 
@@ -42,15 +39,14 @@ def design_window():
     def cancel_cmd():
         root.destroy()
 
-    def plot_ecg():
+    def change_ecg_picture_cmd():
         filename = change_file("test_data")
+        if filename == "":
+            messagebox.showinfo("Cancel", "You cancelled the file selection")
+            return
         overall_plotting(filename)
         hr = overall_rate(filename)
         filename_png = "{}.png".format(filename.strip(".csv"))
-        return filename_png, hr
-
-    def change_ecg_picture_cmd():
-        filename_png, hr = plot_ecg()
         tk_image = load_and_resize_image(filename_png)
         ecg_image_label.configure(image=tk_image)
         ecg_image_label.image = tk_image
@@ -59,6 +55,9 @@ def design_window():
 
     def change_medical_picture_cmd():
         filename = change_file("images")
+        if filename == "":
+            messagebox.showinfo("Cancel", "You cancelled the image load")
+            return
         tk_image = load_and_resize_image(filename)
         medical_image_label.configure(image=tk_image)
         medical_image_label.image = tk_image
