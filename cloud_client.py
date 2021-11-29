@@ -40,7 +40,7 @@ def main():
     # Add patient with full data, Strings intead of Ints
     add_files_to_server("Phoebe Dijour", "1", "p1.png", "p2.png", "90",
                         "2021-04-15 16:12:23")
-    
+
     # Add patient with partial data (medical image)
     add_files_to_server("", 2, "m1.png", "", "",
                         "")
@@ -66,22 +66,23 @@ def main():
     # Add data for existing patient with full data
     add_files_to_server("Yume Choi", 5, "y3.png", "y4.png", 98,
                         "2021-10-06 11:11:40")
-    
-    # Add data for existing patient with partial data (onl medical image)
+
+    # Add data for existing patient with partial data (only medical image)
     add_files_to_server("Meghan Doyle", 2, "m2.png", "m3.png", 60,
                         "2019-10-12 12:12:40")
-    
+
     # Add data for existing patient with partial data (name, ecg image)
     add_files_to_server("", 3, "t3.png", "t4.png", 60,
                         "2021-11-13 08:09:10")
 
     # Add partial data for existing patient with full data
     add_files_to_server("", 5, "", "y6.png", 98,
-                        "2021-10-06 11:11:40")    
+                        "2021-10-06 11:11:40")
 
     # New name entered for existing patient ID
     add_files_to_server("Youme Choi", 5, "y7.png", "y8.png", 98,
                         "2021-10-06 11:11:40")
+
 
 if __name__ == '__main__':
     main()

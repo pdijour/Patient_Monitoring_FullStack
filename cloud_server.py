@@ -46,8 +46,6 @@ def new_patient():
                            in_data["ECG_image_files"],
                            in_data["heartrates"],
                            in_data["datetimes"])
-        logging.info("Added new patient into database with id: {}"
-                     .format(in_data["record_number"]))
         return "Added patient {}".format(in_data["record_number"])
     else:
         # Patient already exists in database
@@ -57,8 +55,6 @@ def new_patient():
                          in_data["ECG_image_files"],
                          in_data["heartrates"],
                          in_data["datetimes"])
-        logging.info("Added new file for patient with id: {}"
-                     .format(in_data["record_number"]))
         return "Added file for patient {}".format(in_data["record_number"])
 
 
@@ -181,6 +177,7 @@ def add_database_entry(patient_name, id_no, medical_file,
     patient_to_add.heart_rates.append(bpm)
     patient_to_add.datetimes.append(timestamp)
     answer = patient_to_add.save()
+    logging.info("Added new patient into database with id: {}".format(id_no))
     return answer
 
 
@@ -209,6 +206,7 @@ def add_patient_file(patient_name, id_no, medical_file,
         patient.heart_rates.append(bpm)
         patient.datetimes.append(timestamp)
     patient.save()
+    logging.info("Added new file for patient with id: {}".format(id_no))
     return patient
 
 

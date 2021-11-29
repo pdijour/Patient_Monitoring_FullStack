@@ -3,54 +3,49 @@
 import pytest
 from datetime import datetime
 from testfixtures import LogCapture
-from cloud_server import initialize_server
+from cloud_server import initialize_server, add_database_entry
 
 initialize_server()
 
 
-err_str_1 = "The value corresponding to the key patient_id " \
-            "is not an integer."
-err_str_2 = "The value corresponding to the key patient_age " \
+err_str_1 = "The value corresponding to the key record_number " \
             "is not an integer."
 
 
 @pytest.mark.parametrize("in_data, key, expected",
-                         [({"patient_id": 25,
-                            "attending_username": "Pan.M",
-                            "patient_age": 54}, "patient_id",
-                           {"patient_id": 25,
-                            "attending_username": "Pan.M",
-                            "patient_age": 54}),
-                          ({"patient_id": "13",
-                            "attending_username": "Pan.T",
-                            "patient_age": 54}, "patient_id",
-                           {"patient_id": 13,
-                            "attending_username": "Pan.T",
-                            "patient_age": 54}),
-                          ({"patient_id": "abc",
-                            "attending_username": "Tian.J",
-                            "patient_age": 54}, "patient_id",
-                           err_str_1),
-                          ({"patient_id": "34c",
-                            "attending_username": "Choi.Y",
-                            "patient_age": 54}, "patient_id",
-                           err_str_1),
-                          ({"patient_id": "34c",
-                            "attending_username": "Zhang.C",
-                            "patient_age": 54}, "patient_age",
-                           {"patient_id": "34c",
-                            "attending_username": "Zhang.C",
-                            "patient_age": 54}),
-                          ({"patient_id": "57",
-                            "attending_username": "Punia.V",
-                            "patient_age": "54a"}, "patient_age",
-                           err_str_2),
-                          ({"patient_id": "23adb",
-                            "attending_username": "Kim.N",
-                            "patient_age": "54"}, "patient_age",
-                           {"patient_id": "23adb",
-                            "attending_username": "Kim.N",
-                            "patient_age": 54})])
+                         [({"patient_name": "Yume Choi",
+                            "record_number": 3,
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
+                           "record_number",
+                           {"patient_name": "Yume Choi",
+                            "record_number": 3,
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"}),
+                          ({"patient_name": "David Tan",
+                            "record_number": "3",
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
+                           "record_number",
+                           {"patient_name": "David Tan",
+                            "record_number": 3,
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"}),
+                          ({"patient_name": "Matthew Weintraub",
+                            "record_number": "abc",
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
+                           "record_number", err_str_1)])
 def test_check_int(in_data, key, expected):
     from cloud_server import check_int
     result = check_int(in_data, key)
@@ -58,106 +53,39 @@ def test_check_int(in_data, key, expected):
 
 
 err_str_3 = "The input was not a dictionary."
-err_str_4 = "The key patient_id is missing from input"
-err_str_5 = "The key patient_age is missing from input"
-err_str_6 = "The key attending_username is missing from input"
-err_str_13 = "The key attending_username is missing from input"
-err_str_14 = "The key attending_email is missing from input"
-err_str_15 = "The key attending_phone is missing from input"
-err_str_17 = "The key patient_id is missing from input"
-err_str_18 = "The key heart_rate is missing from input"
-err_str_20 = "The key patient_id is missing from input"
-err_str_21 = "The key heart_rate_average_since is missing from input"
-expected_patient_input = {"patient_id": int,
-                          "attending_username": str,
-                          "patient_age": int}
-expected_attending_input = {"attending_username": str,
-                            "attending_email": str,
-                            "attending_phone": str}
-expected_hr_input = {"patient_id": int,
-                     "heart_rate": int}
-expected_interval_input = {"patient_id": int,
-                           "heart_rate_average_since": str}
+err_str_4 = "The key record_number is empty"
+expected_patient_input = {"patient_name": str,
+                          "record_number": int,
+                          "medical_image_files": str,
+                          "ECG_image_files": str,
+                          "heartrates": int,
+                          "datetimes": str}
 
 
-@pytest.mark.parametrize("in_data, expected_input, expected_val, "
+@pytest.mark.parametrize("in_data, expected_input, expected_val,"
                          "expected_code",
-                         [({"patient_id": 25,
-                            "attending_username": "Fisher.B",
-                            "patient_age": 45555},
+                         [({"patient_name": "Yume Choi",
+                            "record_number": 3,
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
                            expected_patient_input, True, 200),
-                          ({"patient_ids": "234",
-                            "attending_username": "Pan.M",
-                            "patient_age": "43"},
+                          ({"patient_name": "Yume Choi",
+                            "record_number": "3",
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": "90",
+                            "datetimes": "2021-10-06 11:11:40"},
+                           expected_patient_input, True, 200),
+                          ({"patient_name": "Yume Choi",
+                            "record_number": "",
+                            "medical_image_files": "y1.png",
+                            "ECG_image_files": "y2.png",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
                            expected_patient_input, err_str_4, 400),
-                          ({"patient_id": 67,
-                            "Doctor": "Choi.Y",
-                            "patient_age": 45},
-                           expected_patient_input, err_str_6, 400),
-                          ({"patient_id": "98",
-                            "attending_username": "Punia.V",
-                            "Age in years": 54,
-                            "Fun facts": []},
-                           expected_patient_input, err_str_5, 400),
-                          ({"patient_num": 243,
-                            "doc": "Zhang.C"},
-                           expected_patient_input, err_str_4, 400),
-                          ("in_data",  expected_patient_input, err_str_3, 400),
-                          (54, expected_patient_input, err_str_3, 400),
-                          ({}, expected_patient_input, err_str_4, 400),
-                          ({"attending_username": "Pan.M",
-                            "attending_email": "mpan@gmail.com",
-                            "attending_phone": "732-320-5855"},
-                           expected_attending_input, True, 200),
-                          ({"attending_name": "Pan.M",
-                            "attending_email": "mpan@gmail.com",
-                            "attending_phone": "732-320-5855"},
-                           expected_attending_input,
-                           err_str_13, 400),
-                          ({"attending_username": "Pan.M",
-                            "send_here": "mpan@gmail.com",
-                            "attending_phone": "732-320-5855"},
-                           expected_attending_input,
-                           err_str_14, 400),
-                          ({"attending_username": "Pan.M",
-                            "attending_email": "mpan@gmail.com",
-                            "call_here": "732-320-5855"},
-                           expected_attending_input, err_str_15, 400),
-                          ({"name_doc": "Pan.M",
-                            "attending_email": "mpan@gmail.com"},
-                           expected_attending_input,
-                           err_str_13, 400),
-                          ("in_data", expected_attending_input,
-                           err_str_3, 400),
-                          (54, expected_attending_input, err_str_3, 400),
-                          ({}, expected_attending_input, err_str_13, 400),
-                          ({"patient_id": 25,
-                            "heart_rate": 96}, expected_hr_input, True, 200),
-                          ({"patient_id": "25",
-                            "heart_rate": "96"}, expected_hr_input, True, 200),
-                          ({"patient_ids": "234",
-                            "heart_rate": 86}, expected_hr_input,
-                           err_str_17, 400),
-                          ({"patient_id": 67,
-                            "bpm": "89"}, expected_hr_input, err_str_18, 400),
-                          ("in_data", expected_hr_input, err_str_3, 400),
-                          (54, expected_hr_input, err_str_3, 400),
-                          ({}, expected_hr_input, err_str_4, 400),
-                          ({"patient_id": 25,
-                            "heart_rate_average_since": "2020-03-09 11:00:36"},
-                           expected_interval_input, True, 200),
-                          ({"patient_id": 25,
-                            "heart_rate_average_since": "2020-03-09 11:00:36"},
-                           expected_interval_input, True, 200),
-                          ({"patient_ids": "234",
-                            "heart_rate_average_since": "2020-03-09 11:00:36"},
-                           expected_interval_input, err_str_20, 400),
-                          ({"patient_id": 67,
-                            "since": "2020-03-09 11:00:36"},
-                           expected_interval_input, err_str_21, 400),
-                          ("in_data", expected_interval_input, err_str_3, 400),
-                          (54, expected_interval_input, err_str_3, 400),
-                          ({}, expected_interval_input, err_str_4, 400)])
+                          (54, expected_patient_input, err_str_3, 400)])
 def test_validate_input(in_data, expected_input, expected_val, expected_code):
     from cloud_server import validate_input
     result = validate_input(in_data, expected_input)
@@ -182,7 +110,7 @@ def test_find_patient():
                                          "2.png", 86, "2020-03-09 11:00:36")
     answer = find_patient(expected_id)
     entry_to_delete.delete()
-    assert answer.id == expected_id
+    assert answer.medical_record_number == expected_id
     assert answer.name == expected_name
 
 
@@ -194,8 +122,67 @@ def test_add_database_entry_is_made():
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"))
 
 
-def test_add_patient_file():
+def test_add_patient_file_is_made():
     from cloud_server import add_patient_file
-    """
-    !!!!!!This is just a placeholder right now, it's not functional!!!!!
-    """
+    with LogCapture() as log_c:
+        add_patient_file("Yume Choi", 5, "3.png", "4.png", 90,
+                         "2021-04-10 12:11:59")
+    log_c.check(("root", "INFO", "Added new file for patient with id: 5"))
+
+
+entry_to_delete1 = add_database_entry("Max Silver", 9, "1.png", "2.png",
+                                      86, "2020-03-09 11:00:36")
+expected_vals1 = ("Max Silver", 9, ["1.png", "3.png"], ["2.png", "4.png"],
+                  [86, 90], ["2020-03-09 11:00:36", "2021-04-10 12:11:59"])
+entry_to_delete2 = add_database_entry("", 10, "1.png", "2.png",
+                                      86, "2020-03-09 11:00:36")
+expected_vals2 = ("Maria Lopez", 10, ["1.png", "3.png"], ["2.png", "4.png"],
+                  [86, 90], ["2020-03-09 11:00:36", "2021-04-10 12:11:59"])
+entry_to_delete3 = add_database_entry("Martha Ball", 11, "1.png", "2.png",
+                                      86, "2020-03-09 11:00:36")
+expected_vals3 = ("Martha Ball", 11, ["1.png"], ["2.png", "4.png"],
+                  [86, 90], ["2020-03-09 11:00:36", "2021-04-10 12:11:59"])
+entry_to_delete4 = add_database_entry("Martin Zoom", 12, "1.png", "2.png",
+                                      86, "2020-03-09 11:00:36")
+expected_vals4 = ("Martin Zoom", 12, ["1.png", "3.png"], ["2.png"],
+                  [86], ["2020-03-09 11:00:36"])
+
+
+@pytest.mark.parametrize("entry, patient_name, id_no, medical_file,"
+                         "ecg_file, bpm, timestamp, expected",
+                         [(entry_to_delete1, "Max Silver", 9,
+                           "3.png", "4.png", 90, "2021-04-10 12:11:59",
+                           expected_vals1),
+                          (entry_to_delete2, "Maria Lopez", 10,
+                           "3.png", "4.png", 90, "2021-04-10 12:11:59",
+                           expected_vals2),
+                          (entry_to_delete3, "Martha Ball", 11,
+                           "", "4.png", 90, "2021-04-10 12:11:59",
+                           expected_vals3),
+                          (entry_to_delete4, "Martin Zoom", 12,
+                           "3.png", "", "", "",
+                           expected_vals4)])
+def test_add_patient_file(entry, patient_name, id_no, medical_file,
+                          ecg_file, bpm, timestamp, expected):
+    from cloud_server import add_patient_file
+    answer = add_patient_file(patient_name, id_no, medical_file, ecg_file,
+                              bpm, timestamp)
+    entry.delete()
+    assert (answer.name, answer.medical_record_number,
+            answer.medical_images, answer.ecg_images,
+            answer.heart_rates, answer.datetimes) == expected
+
+
+def test_patient_name_change():
+    from cloud_server import add_database_entry
+    from cloud_server import add_patient_file
+    with LogCapture() as log_c:
+        entry_to_delete = add_database_entry("Yume Choi", 3, "1.png", "2.png",
+                                             86, "2020-03-09 11:00:36")
+        add_patient_file("Youme Choi", 3, "3.png", "4.png", 90,
+                         "2021-04-10 12:11:59")
+        entry_to_delete.delete()
+    log_c.check(('root', 'INFO', 'Added new patient into database with id: 3'),
+                ('root', 'WARNING', 'Entered patient name does not match '
+                 'records for 3. Patient name will now be set to Youme Choi'),
+                ('root', 'INFO', 'Added new file for patient with id: 3'))
