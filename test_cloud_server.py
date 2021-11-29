@@ -166,7 +166,7 @@ def test_validate_input(in_data, expected_input, expected_val, expected_code):
 
 def test_add_database_entry():
     from cloud_server import add_database_entry
-    expected_name = "David Testing"
+    expected_name = "Yume Choi"
     answer = add_database_entry(expected_name, 5, "1.png", "2.png", 86,
                                 "2020-03-09 11:00:36")
     answer.delete()
@@ -177,7 +177,7 @@ def test_find_patient():
     from cloud_server import find_patient
     from cloud_server import add_database_entry
     expected_name = "Yume Choi"
-    expected_id = 32
+    expected_id = 5
     entry_to_delete = add_database_entry(expected_name, expected_id, "1.png",
                                          "2.png", 86, "2020-03-09 11:00:36")
     answer = find_patient(expected_id)
@@ -189,6 +189,13 @@ def test_find_patient():
 def test_add_database_entry_is_made():
     from cloud_server import add_database_entry
     with LogCapture() as log_c:
-        add_database_entry("Choi.Y", 5, "1.png", "2.png", 86,
+        add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
                            "2020-03-09 11:00:36")
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"))
+
+
+def test_add_patient_file():
+    from cloud_server import add_patient_file
+    """
+    !!!!!!This is just a placeholder right now, it's not functional!!!!!
+    """

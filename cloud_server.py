@@ -19,7 +19,7 @@ def initialize_server():
     logging.basicConfig(filename="patient_record_server.log",
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:bme547mongo@bme547.ba348.mongodb.net/"
+    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
             "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
@@ -31,30 +31,43 @@ def status():
     return "Server is on"
 
 
-@app.route("/api/new_patient", methods=["POST"])
+@app.route("/api/add_files", methods=["POST"])
 def new_patient():
     in_data = request.get_json()
     error_string, status_code = \
         validate_input(in_data, expected_input)
     if error_string is not True:
         return error_string, status_code
-    add_database_entry(in_data["patient_name"],
-                       in_data["record_number"],
-                       in_data["medical_image_file"],
-                       in_data["ECG_image_file"],
-                       in_data["heartrate"],
-                       in_data["datetime"])
-    logging.info("Added new patient into database with id: {}"
-                 .format(in_data["record_number"]))
-    return "Added patient {}".format(in_data)
+    if not find_patient(in_data["record_number"]):
+        # Patient does not already exist in database
+        add_database_entry(in_data["patient_name"],
+                           in_data["record_number"],
+                           in_data["medical_image_files"],
+                           in_data["ECG_image_files"],
+                           in_data["heartrates"],
+                           in_data["datetimes"])
+        logging.info("Added new patient into database with id: {}"
+                     .format(in_data["record_number"]))
+        return "Added patient {}".format(in_data)
+    else:
+        # Patient already exists in database
+        add_patient_file(in_data["patient_name"],
+                         in_data["record_number"],
+                         in_data["medical_image_files"],
+                         in_data["ECG_image_files"],
+                         in_data["heartrates"],
+                         in_data["datetimes"])
+        logging.info("Added new file for patient with id: {}"
+                     .format(in_data["record_number"]))
+        return "Added file for patient {}".format(in_data["record_number"])
 
 
 expected_input = {"patient_name": str,
                   "record_number": int,
-                  "medical_image_file": str,
-                  "ECG_image_file": str,
-                  "heartrate": int,
-                  "datetime": str}
+                  "medical_image_files": str,
+                  "ECG_image_files": str,
+                  "heartrates": int,
+                  "datetimes": str}
 
 
 def validate_input(in_data, expected_input):
@@ -101,6 +114,8 @@ def validate_input(in_data, expected_input):
     """
     if type(in_data) is not dict:
         return "The input was not a dictionary.", 400
+    if in_data["record_number"] == "":
+        return "The key record_number is empty", 400
     for key in expected_input:
         if key not in in_data:
             return "The key {} is missing from input".format(key), 400
@@ -154,14 +169,14 @@ def check_int(in_data, key):
     return in_data
 
 
-def add_database_entry(patient_name, id_no, medical_files,
-                       ecg_files, bpms, timestamps):
+def add_database_entry(patient_name, id_no, medical_file,
+                       ecg_file, bpm, timestamp):
     patient_to_add = Patient(name=patient_name,
-                             medical_record_number=id_no,
-                             medical_images=medical_files,
-                             ecg_images=ecg_files,
-                             heart_rates=bpms,
-                             datetimes=timestamps)
+                             medical_record_number=id_no)
+    patient_to_add.medical_images.append(medical_file)
+    patient_to_add.ecg_images.append(ecg_file)
+    patient_to_add.heart_rates.append(bpm)
+    patient_to_add.datetimes.append(timestamp)
     answer = patient_to_add.save()
     return answer
 
@@ -174,6 +189,29 @@ def find_patient(id_no):
     return patient
 
 
+def add_patient_file(patient_name, id_no, medical_file,
+                     ecg_file, bpm, timestamp):
+    patient = find_patient(id_no)
+    print(patient.datetimes)
+    patient.datetimes.append(timestamp)
+    print(patient.datetimes)
+    # if patient_name != "":
+    #     if patient_name != patient.name:
+    #         logging.warning("Entered patient name does not match"
+    #                         "records for {}. Patient name will now"
+    #                         "be set to {}".format(id_no, patient_name))
+    #         patient.name = patient_name
+    # if medical_file != "":
+    #     patient.medical_images.append(medical_file)
+    # if ecg_file != "":
+    #     patient.ecg_images.append(ecg_file)
+    # if bpm != "":
+    #     patient.heart_rates.append(bpm)
+    #     patient.datetimes.append(timestamp)
+    patient.save()
+    return patient
+
+
 if __name__ == '__main__':
     initialize_server()
-    app.run(host="0.0.0.0", port=5001)
+    app.run()
