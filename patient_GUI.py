@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 from ecg_analysis import overall_plotting, overall_rate
+from datetime import datetime
 
 
 def load_and_resize_image(filename):
@@ -29,12 +30,23 @@ def Upload_button_cmd():
 def design_window():
 
     def upload_button_cmd():
+        from cloud_client import add_files_to_server
         name = name_data.get()
         record_number = record_data.get()
-        medical_image = tk_medical_image.get()
-        ecg_image = tk_ecg_image.get()
+        # medical_image = tk_medical_image.get()
+        # ecg_image = tk_ecg_image.get()
+        heart_rate = hr
+        time = datetime.now()
+        timestamp = datetime.strftime(time, "%Y-%m-%d %H:%M:%S")
 
-        # Here, put command to upload to server
+        answer = add_files_to_server(name, record_number,
+                                     "1.png",
+                                     "2.png",
+                                     heart_rate,
+                                     timestamp)
+
+        # Update GUI
+        output_string.configure(text=answer)
 
     def cancel_cmd():
         root.destroy()
@@ -107,14 +119,15 @@ def design_window():
 
     hr = overall_rate("test_data/test_data1.csv")
 
-    # ttk.Label(root, text=hr)\
-    #     .grid(column=4, row=4, sticky='w', padx=20, pady=20)
     bpm_label = ttk.Label(root, text=hr)
     bpm_label.grid(column=4, row=4, sticky='w', padx=20, pady=20)
 
     upload_button = ttk.Button(root, text="Upload",
-                               command=Upload_button_cmd)
+                               command=upload_button_cmd)
     upload_button.grid(column=3, row=5, columnspan=2)
+
+    output_string = ttk.Label(root)
+    output_string.grid(column=3, row=6)
 
     cancel_button = ttk.Button(root, text="Cancel",
                                command=cancel_cmd)
