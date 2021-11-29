@@ -159,7 +159,7 @@ def bpm_calc(duration, num_beats):
     :returns: float containing heartrate of ECG strip in bpm
     """
     time_min = duration / 60
-    bpm = float("{:.2f}".format(num_beats/time_min))
+    bpm = round(num_beats/time_min)
     return bpm
 
 
