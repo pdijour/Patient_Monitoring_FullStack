@@ -61,7 +61,9 @@ def new_patient():
 @app.route("/api/add_image", methods=["POST"])
 def new_image():
     in_data = request.get_json()
-    
+    b64_string = in_data["image"]
+    filename = in_data["filename"]
+    return filename
 
 
 expected_input = {"patient_name": str,
@@ -208,7 +210,6 @@ def add_patient_file(patient_name, id_no, medical_file,
         patient.medical_images.append(medical_file)
     if ecg_file != "":
         patient.ecg_images.append(ecg_file)
-    if bpm != "":
         patient.heart_rates.append(bpm)
         patient.datetimes.append(timestamp)
     patient.save()
