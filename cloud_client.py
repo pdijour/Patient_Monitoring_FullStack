@@ -1,6 +1,7 @@
 # cloud_client.py
 
 import requests
+import base64
 
 server = "http://127.0.0.1:5000"
 
@@ -22,9 +23,31 @@ def add_files_to_server(patient_name, id_no, medical_files,
     return r.text
 
 
-# def convert_id_to_int(id_input):
-#     id_output = int(id_input)
-#     return id_output
+def send_image_to_server(filename):
+    b64_string = convert_image_file_to_b64_string(filename)
+    reply = send_b64_string_to_server(b64_string, filename)
+    return reply
+
+
+def convert_image_file_to_b64_string(filename):
+    with open(filename, "rb") as image_file:
+        b64_bytes = base64.b64encode(image_file.read())
+    b64_string = str(b64_bytes, encoding='utf-8')
+    return b64_string, filename
+
+
+def send_b64_string_to_server(b64_string, filename):
+    out_json = {"image": b64_string,
+                "filename": filename}
+    r = requests.post(server + "/api/add_image",
+                      json=out_json)
+    if r.status_code != 200:
+        print(r.text)
+        return False
+    else:
+        print(r.status_code)
+        print(r.text)
+        return r.text
 
 
 def main():
@@ -82,6 +105,9 @@ def main():
     # New name entered for existing patient ID
     add_files_to_server("Youme Choi", 5, "y7.png", "y8.png", 98,
                         "2021-10-06 11:11:40")
+
+    # ECG Image uploaded
+    send_image_to_server("images/acl1.jpg")
 
 
 if __name__ == '__main__':
