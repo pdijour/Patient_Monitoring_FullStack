@@ -161,7 +161,7 @@ def test_num_peaks(time_peaks, expected):
 
 
 @pytest.mark.parametrize("duration, num_beats, expected", [
-                         (27.775, 34, 73.45)
+                         (27.775, 34, 73)
                          ])
 def test_bpm_calc(duration, num_beats, expected):
     from ecg_analysis import bpm_calc
