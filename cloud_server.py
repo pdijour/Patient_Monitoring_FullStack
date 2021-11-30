@@ -58,6 +58,12 @@ def new_patient():
         return "Added file for patient {}".format(in_data["record_number"])
 
 
+@app.route("/api/add_image", methods=["POST"])
+def new_image():
+    in_data = request.get_json()
+    
+
+
 expected_input = {"patient_name": str,
                   "record_number": int,
                   "medical_image_files": str,
