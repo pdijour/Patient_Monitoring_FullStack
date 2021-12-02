@@ -4,6 +4,7 @@ import pytest
 from datetime import datetime
 from testfixtures import LogCapture
 from cloud_server import initialize_server, add_database_entry
+from database_definitions import Patient
 
 initialize_server()
 
@@ -207,4 +208,27 @@ def test_list_record_numbers():
     entry_2.delete()
     entry_3.delete()
     expected = [3, 5, 11]
+    assert answer == expected
+
+
+expected_info = {"name": "Yume Choi",
+                 "medical_record_number": 3,
+                 "medical_images": "acl1.png",
+                 "medical_images_b64": "123",
+                 "ecg_images": "ecg1.png",
+                 "ecg_images_b64": "456",
+                 "heart_rates": 85,
+                 "datetimes": "2020-03-00 11:00:36"}
+
+
+def test_retrieve_all_info():
+    from cloud_server import retrieve_all_info
+    b64_images = ["123", "456", "789"]
+    patient1 = Patient("Yume Choi", 3, "acl1.png", b64_images[0], "ecg1.png",
+                       b64_images[1], 85, "2020-03-00 11:00:36")
+    patient1.save()
+
+    answer = retrieve_all_info(3)
+    patient1.delete()
+    expected = expected_info
     assert answer == expected

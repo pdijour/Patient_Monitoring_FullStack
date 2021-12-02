@@ -34,19 +34,26 @@ def design_window():
 
     ttk.Label(root, text="Select Patient Medical Record Number")\
         .grid(column=0, row=0, sticky='w', padx=20, pady=20)
+
     r = requests.get(server + "/api/record_numbers")
     medical_record_options = json.loads(r.text)
+
     variable = tk.StringVar(root)
-    variable.set("1")
+    variable.set(json.loads(r.text)[1])
     record_selector = tk.OptionMenu(root, variable, *medical_record_options)
     record_selector.grid(column=1, row=0, sticky='w', padx=20, pady=20)
+
+    # Read Selected option and use post request to get all the info
+    patient_id = int(variable.get())
+    r = requests.post(server + "/api/get_info", json=patient_id)
+    patient_info = json.loads(r.text)
 
     ttk.Label(root, text="Patient Name") \
         .grid(column=0, row=2, sticky='w', padx=20, pady=20)
 
     name_data = tk.StringVar()
     name_display_box = ttk.Entry(root, textvariable=name_data)
-    name_display_box.insert(0, "Yume Choi")
+    name_display_box.insert(0, patient_info["name"])
     name_display_box.config(state='readonly')
     name_display_box.grid(column=1, row=2, sticky='w', padx=20, pady=20)
 
@@ -55,7 +62,7 @@ def design_window():
 
     number_data = tk.StringVar()
     number_display_box = ttk.Entry(root, textvariable=number_data)
-    number_display_box.insert(0, "1")
+    number_display_box.insert(0, patient_info["medical_record_number"])
     number_display_box.config(state='readonly')
     number_display_box.grid(column=1, row=3, sticky='w', padx=20, pady=20)
 
@@ -64,7 +71,7 @@ def design_window():
 
     hr_data = tk.StringVar()
     hr_display_box = ttk.Entry(root, textvariable=hr_data)
-    hr_display_box.insert(0, "60")
+    hr_display_box.insert(0, patient_info["heart_rates"][-1])
     hr_display_box.config(state='readonly')
     hr_display_box.grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
@@ -73,7 +80,7 @@ def design_window():
 
     datetime_data = tk.StringVar()
     datetime_display_box = ttk.Entry(root, textvariable=datetime_data)
-    datetime_display_box.insert(0, "11-14-2021")
+    datetime_display_box.insert(0, patient_info["datetimes"][-1])
     datetime_display_box.config(state='readonly')
     datetime_display_box.grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
@@ -82,20 +89,18 @@ def design_window():
 
     ttk.Label(root, text="Display Medical Image")\
         .grid(column=3, row=0, sticky='w', padx=20, pady=20)
-    medical_image_options = ["X-ray", "MRI", "CT", "PET"]
+    medical_image_options = patient_info["medical_images"]
     variable2 = tk.StringVar(root)
-    variable2.set("X-ray")
+    variable2.set(medical_image_options[0])
     record_selector = tk.OptionMenu(root, variable2, *medical_image_options)
     record_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
-    medical_image_options = ["tachycardic 11-01-2021",
-                             "normal 11-05-2021",
-                             "normal 11-10-2021"]
+    ecg_image_options = patient_info["ecg_images"]
     variable3 = tk.StringVar(root)
-    variable3.set("tachycardic 11-01-2021")
-    record_selector = tk.OptionMenu(root, variable3, *medical_image_options)
+    variable3.set(ecg_image_options[0])
+    record_selector = tk.OptionMenu(root, variable3, *ecg_image_options)
     record_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
 
     tk_image = load_and_resize_image("images/acl1.jpg")

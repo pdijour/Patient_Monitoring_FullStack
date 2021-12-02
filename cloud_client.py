@@ -112,6 +112,10 @@ def main():
     r = requests.get(server + "/api/record_numbers")
     print(r.text)
 
+    r = requests.post(server + "/api/get_info", json=3)
+    print(r.status_code)
+    print(r.text)
+
 
 if __name__ == '__main__':
     main()
