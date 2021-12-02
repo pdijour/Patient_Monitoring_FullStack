@@ -40,7 +40,9 @@ def design_window():
 
     variable = tk.StringVar(root)
     variable.set(json.loads(r.text)[1])
-    record_selector = tk.OptionMenu(root, variable, *medical_record_options)
+    record_selector = ttk.Combobox(root, textvariable=variable)
+    record_selector['values'] = medical_record_options
+    record_selector['state'] = 'readonly'
     record_selector.grid(column=1, row=0, sticky='w', padx=20, pady=20)
 
     # Read Selected option and use post request to get all the info
@@ -92,16 +94,21 @@ def design_window():
     medical_image_options = patient_info["medical_images"]
     variable2 = tk.StringVar(root)
     variable2.set(medical_image_options[0])
-    record_selector = tk.OptionMenu(root, variable2, *medical_image_options)
-    record_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
+    image_selector = ttk.Combobox(root, textvariable=variable2)
+    image_selector['values'] = medical_image_options
+    image_selector['state'] = 'readonly'
+    image_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
     ecg_image_options = patient_info["ecg_images"]
     variable3 = tk.StringVar(root)
     variable3.set(ecg_image_options[0])
-    record_selector = tk.OptionMenu(root, variable3, *ecg_image_options)
-    record_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
+    ecg_selector = ttk.Combobox(root, textvariable=variable3)
+    ecg_selector['values'] = ecg_image_options
+    ecg_selector['state'] = 'readonly'
+    ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
+
 
     tk_image = load_and_resize_image("images/acl1.jpg")
     image_label = ttk.Label(root, image=tk_image)
