@@ -1,6 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
+import requests
+import json
+
+
+server = "http://127.0.0.1:5000"
 
 
 def load_and_resize_image(filename):
@@ -29,7 +34,8 @@ def design_window():
 
     ttk.Label(root, text="Select Patient Medical Record Number")\
         .grid(column=0, row=0, sticky='w', padx=20, pady=20)
-    medical_record_options = ["1", "2", "3", "4", "5", "6"]
+    r = requests.get(server + "/api/record_numbers")
+    medical_record_options = json.loads(r.text)
     variable = tk.StringVar(root)
     variable.set("1")
     record_selector = tk.OptionMenu(root, variable, *medical_record_options)

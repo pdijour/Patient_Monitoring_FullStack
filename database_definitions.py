@@ -14,6 +14,8 @@ class Patient(MongoModel):
     name = fields.CharField()
     medical_record_number = fields.IntegerField(primary_key=True)
     medical_images = fields.ListField()
+    medical_images_b64 = fields.ListField()
     ecg_images = fields.ListField()
+    ecg_images_b64 = fields.ListField()
     heart_rates = fields.ListField()
     datetimes = fields.ListField()

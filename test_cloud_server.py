@@ -95,8 +95,8 @@ def test_validate_input(in_data, expected_input, expected_val, expected_code):
 def test_add_database_entry():
     from cloud_server import add_database_entry
     expected_name = "Yume Choi"
-    answer = add_database_entry(expected_name, 5, "1.png", "2.png", 86,
-                                "2020-03-09 11:00:36")
+    answer = add_database_entry(expected_name, 5, "1.png", "2.png",
+                                86, "2020-03-09 11:00:36")
     answer.delete()
     assert answer.name == expected_name
 
@@ -117,17 +117,22 @@ def test_find_patient():
 def test_add_database_entry_is_made():
     from cloud_server import add_database_entry
     with LogCapture() as log_c:
-        add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
-                           "2020-03-09 11:00:36")
+        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
+                                             "2020-03-09 11:00:36")
+        entry_to_delete.delete()
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"))
 
 
 def test_add_patient_file_is_made():
     from cloud_server import add_patient_file
     with LogCapture() as log_c:
+        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
+                                             "2020-03-09 11:00:36")
         add_patient_file("Yume Choi", 5, "3.png", "4.png", 90,
                          "2021-04-10 12:11:59")
-    log_c.check(("root", "INFO", "Added new file for patient with id: 5"))
+        entry_to_delete.delete()
+    log_c.check(("root", "INFO", "Added new patient into database with id: 5"),
+                ("root", "INFO", "Added new file for patient with id: 5"))
 
 
 entry_to_delete1 = add_database_entry("Max Silver", 9, "1.png", "2.png",
@@ -186,3 +191,20 @@ def test_patient_name_change():
                 ('root', 'WARNING', 'Entered patient name does not match '
                  'records for 3. Patient name will now be set to Youme Choi'),
                 ('root', 'INFO', 'Added new file for patient with id: 3'))
+
+
+def test_list_record_numbers():
+    from cloud_server import list_record_numbers
+    from cloud_server import add_database_entry
+    entry = add_database_entry("Yume Choi", 3, "1.png", "2.png",
+                               86, "2020-03-09 11:00:36")
+    entry_2 = add_database_entry("Michael Tian", 5, "1.png", "2.png",
+                                 86, "2020-03-09 11:00:36")
+    entry_3 = add_database_entry("Phoebe Dijour", 11, "1.png", "2.png",
+                                 86, "2020-03-09 11:00:36")
+    answer = list_record_numbers()
+    entry.delete()
+    entry_2.delete()
+    entry_3.delete()
+    expected = [3, 5, 11]
+    assert answer == expected

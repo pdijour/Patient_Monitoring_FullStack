@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 import logging
 from pymodm import connect
 from database_definitions import Patient
+import base64
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -16,11 +17,11 @@ def initialize_server():
     This function initializes the server log as well as creates a connection
     with the MongoDB database.
     """
-    logging.basicConfig(filename="patient_record_server.log",
-                        level=logging.DEBUG)
+    #logging.basicConfig(filename="patient_record_server.log",
+                        #level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
-            "final_project?retryWrites=true&w=majority")
+    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
+            "myFirstDatabase?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
@@ -64,6 +65,12 @@ def new_image():
     b64_string = in_data["image"]
     filename = in_data["filename"]
     return filename
+
+
+@app.route("/api/record_numbers", methods=["GET"])
+def id_numbers():
+    record_numbers = list_record_numbers()
+    return jsonify(record_numbers)
 
 
 expected_input = {"patient_name": str,
@@ -217,6 +224,41 @@ def add_patient_file(patient_name, id_no, medical_file,
     return patient
 
 
+def list_record_numbers():
+    results = Patient.objects.raw({})
+    all_record_numbers = []
+    for item in results:
+        all_record_numbers.append(item.medical_record_number)
+    return all_record_numbers
+
+# Just here for me to test in the mean time
+
+
+def read_file_as_b64(image_path):
+    with open(image_path, "rb") as image_file:
+        b64_bytes = base64.b64encode(image_file.read())
+    b64_string = str(b64_bytes, encoding='utf-8')
+    return b64_string
+
+
 if __name__ == '__main__':
     initialize_server()
+    path = "/Users/michael.tian/Desktop/BME 547/class_repos/final-project-spooky-dookie/images/"
+    images = ["acl1.jpg", "acl2.jpg", "esophagus 1.jpg", "esophagus2.jpg", "synpic50411.jpg",
+              "synpic51041.jpg", "synpic51042.jpg", "upj1.jpg", "upj2.jpg", "test_ECG.jpg", "test_tachycardia.jpg"]
+    for i in range(len(images)):
+        images[i] = path + images[i]
+    b64_images = []
+    for i in images:
+        b64_images.append(read_file_as_b64(i))
+    datetimes = ["2020-03-00 11:00:36", "2020-03-01 11:00:36", "2020-03-02 11:00:36"]
+    patient1 = Patient("Yume Choi", 3, "acl1.png", b64_images[0], "ecg1.png",
+                       b64_images[-2], 85, datetimes[0])
+    patient2 = Patient("Michael Tian", 5, images[0:10], b64_images[0:10], images[10:],
+                       b64_images[10:], 85, datetimes[1:])
+    patient3 = Patient("Phoebe Dijour", 11, ["acl1.png", "acl2.png"], [b64_images[0], b64_images[1]], "ecg1.png",
+                       b64_images[-1], 85, datetimes[0])
+    patient1.save()
+    patient2.save()
+    patient3.save()
     app.run()
