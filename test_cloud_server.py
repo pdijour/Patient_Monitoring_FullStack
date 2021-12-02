@@ -118,7 +118,8 @@ def test_find_patient():
 def test_add_database_entry_is_made():
     from cloud_server import add_database_entry
     with LogCapture() as log_c:
-        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
+        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png",
+                                             "2.png", 86,
                                              "2020-03-09 11:00:36")
         entry_to_delete.delete()
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"))
@@ -127,7 +128,8 @@ def test_add_database_entry_is_made():
 def test_add_patient_file_is_made():
     from cloud_server import add_patient_file
     with LogCapture() as log_c:
-        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png", "2.png", 86,
+        entry_to_delete = add_database_entry("Yume Choi", 5, "1.png",
+                                             "2.png", 86,
                                              "2020-03-09 11:00:36")
         add_patient_file("Yume Choi", 5, "3.png", "4.png", 90,
                          "2021-04-10 12:11:59")

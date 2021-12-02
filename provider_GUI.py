@@ -42,7 +42,6 @@ def design_window():
         image_selector['values'] = patient_info["medical_images"]
         ecg_selector['values'] = patient_info["ecg_images"]
 
-
     root = tk.Tk()
     root.configure(background="#ececec")
     root.title("Monitoring Station GUI")
