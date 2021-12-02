@@ -1,6 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
+import requests
+import json
+
+
+server = "http://127.0.0.1:5000"
 
 
 def load_and_resize_image(filename):
@@ -14,14 +19,28 @@ def load_and_resize_image(filename):
     return tk_image
 
 
-def Save_button_cmd():
-    return "Saved!"
-
-
 def design_window():
 
     def cancel_cmd():
         root.destroy()
+
+    def save_button_cmd():
+        return "Saved!"
+
+    def update_info(event):
+        patient_id = int(variable.get())
+        r = requests.post(server + "/api/get_info", json=patient_id)
+        patient_info = json.loads(r.text)
+
+        namelabel.set(patient_info["name"])
+        idlabel.set(patient_info["medical_record_number"])
+        hrlabel.set(patient_info["heart_rates"][-1])
+        dtlabel.set(patient_info["datetimes"][-1])
+
+        variable2.set(patient_info["medical_images"][0])
+        variable3.set(patient_info["ecg_images"][0])
+        image_selector['values'] = patient_info["medical_images"]
+        ecg_selector['values'] = patient_info["ecg_images"]
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -29,68 +48,78 @@ def design_window():
 
     ttk.Label(root, text="Select Patient Medical Record Number")\
         .grid(column=0, row=0, sticky='w', padx=20, pady=20)
-    medical_record_options = ["1", "2", "3", "4", "5", "6"]
+
+    r = requests.get(server + "/api/record_numbers")
+    medical_record_options = json.loads(r.text)
+
     variable = tk.StringVar(root)
-    variable.set("1")
-    record_selector = tk.OptionMenu(root, variable, *medical_record_options)
+    variable.set(json.loads(r.text)[1])
+    record_selector = ttk.Combobox(root, textvariable=variable)
+    record_selector['values'] = medical_record_options
+    record_selector['state'] = 'readonly'
     record_selector.grid(column=1, row=0, sticky='w', padx=20, pady=20)
+
+    record_selector.bind('<<ComboboxSelected>>', update_info)
+
+    # Read Selected option and use post request to get all the info
+    patient_id = int(variable.get())
+    r = requests.post(server + "/api/get_info", json=patient_id)
+    patient_info = json.loads(r.text)
 
     ttk.Label(root, text="Patient Name") \
         .grid(column=0, row=2, sticky='w', padx=20, pady=20)
 
-    name_data = tk.StringVar()
-    name_display_box = ttk.Entry(root, textvariable=name_data)
-    name_display_box.insert(0, "Yume Choi")
-    name_display_box.config(state='readonly')
-    name_display_box.grid(column=1, row=2, sticky='w', padx=20, pady=20)
+    namelabel = tk.StringVar()
+    namelabel.set(patient_info["name"])
+    ttk.Label(textvariable=namelabel)\
+        .grid(column=1, row=2, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Medical Record Number")\
         .grid(column=0, row=3, sticky='w', padx=20, pady=20)
 
-    number_data = tk.StringVar()
-    number_display_box = ttk.Entry(root, textvariable=number_data)
-    number_display_box.insert(0, "1")
-    number_display_box.config(state='readonly')
-    number_display_box.grid(column=1, row=3, sticky='w', padx=20, pady=20)
+    idlabel = tk.StringVar()
+    idlabel.set(patient_info["medical_record_number"])
+    ttk.Label(textvariable=idlabel)\
+        .grid(column=1, row=3, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Latest Heart Rate")\
         .grid(column=0, row=4, sticky='w', padx=20, pady=20)
 
-    hr_data = tk.StringVar()
-    hr_display_box = ttk.Entry(root, textvariable=hr_data)
-    hr_display_box.insert(0, "60")
-    hr_display_box.config(state='readonly')
-    hr_display_box.grid(column=1, row=4, sticky='w', padx=20, pady=20)
+    hrlabel = tk.StringVar()
+    hrlabel.set(patient_info["heart_rates"][-1])
+    ttk.Label(textvariable=hrlabel)\
+        .grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Latest ECG Trace")\
         .grid(column=0, row=6, sticky='w', padx=20, pady=20)
 
-    datetime_data = tk.StringVar()
-    datetime_display_box = ttk.Entry(root, textvariable=datetime_data)
-    datetime_display_box.insert(0, "11-14-2021")
-    datetime_display_box.config(state='readonly')
-    datetime_display_box.grid(column=1, row=6, sticky='w', padx=20, pady=20)
+    dtlabel = tk.StringVar()
+    dtlabel.set(patient_info["datetimes"][-1])
+    ttk.Label(textvariable=dtlabel)\
+        .grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
     cancel_button = ttk.Button(root, text="Cancel", command=cancel_cmd)
     cancel_button.grid(column=6, row=12)
 
     ttk.Label(root, text="Display Medical Image")\
         .grid(column=3, row=0, sticky='w', padx=20, pady=20)
-    medical_image_options = ["X-ray", "MRI", "CT", "PET"]
+    medical_image_options = patient_info["medical_images"]
     variable2 = tk.StringVar(root)
-    variable2.set("X-ray")
-    record_selector = tk.OptionMenu(root, variable2, *medical_image_options)
-    record_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
+    variable2.set(medical_image_options[0])
+    image_selector = ttk.Combobox(root, textvariable=variable2)
+    image_selector['values'] = medical_image_options
+    image_selector['state'] = 'readonly'
+    image_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
 
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
-    medical_image_options = ["tachycardic 11-01-2021",
-                             "normal 11-05-2021",
-                             "normal 11-10-2021"]
+    ecg_image_options = patient_info["ecg_images"]
     variable3 = tk.StringVar(root)
-    variable3.set("tachycardic 11-01-2021")
-    record_selector = tk.OptionMenu(root, variable3, *medical_image_options)
-    record_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
+    variable3.set(ecg_image_options[0])
+    ecg_selector = ttk.Combobox(root, textvariable=variable3)
+    ecg_selector['values'] = ecg_image_options
+    ecg_selector['state'] = 'readonly'
+    ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
 
     tk_image = load_and_resize_image("images/acl1.jpg")
     image_label = ttk.Label(root, image=tk_image)
@@ -105,15 +134,15 @@ def design_window():
     image_label3.grid(column=3, row=7, columnspan=2)
 
     save_last_ecg_button = ttk.Button(root, text="Save",
-                                      command=Save_button_cmd)
+                                      command=save_button_cmd)
     save_last_ecg_button.grid(column=0, row=8, columnspan=2)
 
     save_selected_ecg_button = ttk.Button(root, text="Save",
-                                          command=Save_button_cmd)
+                                          command=save_button_cmd)
     save_selected_ecg_button.grid(column=3, row=8, columnspan=2)
 
     save_medical_image_button = ttk.Button(root, text="Save",
-                                           command=Save_button_cmd)
+                                           command=save_button_cmd)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
     root.mainloop()
