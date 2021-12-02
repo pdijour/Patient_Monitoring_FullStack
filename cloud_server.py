@@ -274,12 +274,12 @@ if __name__ == '__main__':
     for i in full_path:
         b64_images.append(read_file_as_b64(i))
     datetimes = ["2020-03-00 11:00:36", "2020-03-01 11:00:36", "2020-03-02 11:00:36"]
-    patient1 = Patient("Yume Choi", 3, "acl1.png", b64_images[0], images[9],
-                       b64_images[-2], [85], [datetimes[0]])
+    patient1 = Patient("Yume Choi", 3, ["acl1.png"], [b64_images[0]], [images[9]],
+                       [b64_images[-2]], [85], [datetimes[0]])
     patient2 = Patient("Michael Tian", 5, images[0:9], b64_images[0:9], images[9:],
                        b64_images[10:], [85, 90], datetimes[1:])
-    patient3 = Patient("Phoebe Dijour", 11, ["acl1.png", "acl2.png"], [b64_images[0], b64_images[1]], images[10],
-                       b64_images[-1], [85], [datetimes[0]])
+    patient3 = Patient("Phoebe Dijour", 11, ["acl1.png", "acl2.png"], [b64_images[0], b64_images[1]], [images[10]],
+                       [b64_images[-1]], [85], [datetimes[0]])
     patient1.save()
     patient2.save()
     patient3.save()
