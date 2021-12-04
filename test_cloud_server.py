@@ -271,3 +271,31 @@ def test_b64_to_ndarray():
                 [ 68, 115, 197],
                 [ 68, 115, 197]]
     assert (answer == expected).all
+
+
+list1 = ['a', 'b', 'c', 'd']
+list2 = [23, 98, 47, 24]
+
+
+@pytest.mark.parametrize("listvar, val, expected", [(list1, 'c', 2),
+                                                    (list2, 98, 1)])
+def test_get_index(listvar, val, expected):
+    from cloud_server import get_index
+    answer = get_index(listvar, val)
+    assert answer == expected
+
+
+def test_resize_nd():
+    from cloud_server import read_file_as_b64
+    from cloud_server import b64_to_ndarray
+    from cloud_server import resize_image
+    b64str = read_file_as_b64("test_image.jpg")
+    nd = b64_to_ndarray(b64str)
+    resized_nd = resize_image(nd)
+    answer = resized_nd[0][0:5]
+    expected = [[ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197]]
+    assert (answer == expected).all

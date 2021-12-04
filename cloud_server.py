@@ -10,6 +10,8 @@ import io
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
 from skimage.io import imsave
+from skimage.transform import resize
+import numpy as np
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -275,6 +277,17 @@ def b64_to_ndarray(b64):
     image_buf = io.BytesIO(image_bytes)
     img_ndarray = mpimg.imread(image_buf, format='JPG')
     return img_ndarray
+
+
+def get_index(listvar, val):
+    index = listvar.index(val)
+    return index
+
+
+def resize_image(nd):
+    resized_nd = resize(nd, (250, 250)) * 255
+    resized_nd = resized_nd.astype(np.uint8)
+    return resized_nd
 
 
 if __name__ == '__main__':

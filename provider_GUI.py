@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 import json
-from cloud_server import b64_to_ndarray, read_file_as_b64
+from cloud_server import b64_to_ndarray, get_index, resize_image
 
 
 server = "http://127.0.0.1:5000"
@@ -23,6 +23,11 @@ def load_and_resize_image(filename):
 def display_ndarray(nd):
     img = ImageTk.PhotoImage(image=Image.fromarray(nd))
     return img
+
+    # pil_image = Image.fromarray(nd)
+    # resized_pil_image = pil_image.resize((250, 250), Image.ANTIALIAS)
+    # img = ImageTk.PhotoImage(resized_pil_image)
+    # return img
 
 
 def design_window():
@@ -49,6 +54,14 @@ def design_window():
         ecg_selector['values'] = patient_info["ecg_images"]
 
         new_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
+
+    def update_medical_image(event):
+        selected_image = variable2.get()
+        index = get_index(patient_info["medical_images"], selected_image)
+        new_medical_b64 = patient_info["medical_images_b64"][index]
+        new_medical_nd = b64_to_ndarray(new_medical_b64)
+        tk_medical_image = display_ndarray(new_medical_nd)
+        medical_image_canvas.create_image(0, 0, anchor="nw", image=tk_medical_image)
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -118,6 +131,7 @@ def design_window():
     image_selector['values'] = medical_image_options
     image_selector['state'] = 'readonly'
     image_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
+    image_selector.bind('<<ComboboxSelected>>', update_medical_image)
 
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
@@ -129,15 +143,20 @@ def design_window():
     ecg_selector['state'] = 'readonly'
     ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
 
-    tk_image = load_and_resize_image("images/acl1.jpg")
+    #tk_image = load_and_resize_image("images/acl1.jpg")
+    new_medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
+    tk_medical_image = display_ndarray(new_medical_nd)
     medical_image_canvas = tk.Canvas(root, width=250, height=250)
+
     #latest_ecg_canvas.create_image(20, 20, anchor="nw", image=tk_image)
     medical_image_canvas.grid(column=3, row=1, rowspan=4, columnspan=2)
     #image_label = ttk.Label(root, image=tk_image)
     #image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
+    medical_image_canvas.create_image(0, 0, anchor="nw", image=tk_medical_image)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
-    tk_image2 = display_ndarray(latest_ecg_nd)
+    resized_ecg_nd = resize_image(latest_ecg_nd)
+    tk_image2 = display_ndarray(resized_ecg_nd)
     latest_ecg_canvas = tk.Canvas(root, width=250, height=250)
     latest_ecg_canvas.create_image(0, 0, anchor="nw", image=tk_image2)
     latest_ecg_canvas.grid(column=0, row=7, columnspan=2)

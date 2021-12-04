@@ -3,6 +3,8 @@ import io
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
 from skimage.io import imsave
+from skimage.transform import resize
+import numpy as np
 
 
 def read_file_as_b64(image_path):
@@ -41,6 +43,11 @@ def b64_to_ndarray(b64):
     img_ndarray = mpimg.imread(image_buf, format='JPG')
     return img_ndarray
 
+def resize_image(nd):
+    resized_nd = resize(nd, (250, 250)) * 255
+    resized_nd = resized_nd.astype(np.uint8)
+    return resized_nd
+
 
 if __name__ == "__main__":
     b64 = read_file_as_b64("/Users/michael.tian/Desktop/"
@@ -49,5 +56,7 @@ if __name__ == "__main__":
     view_b64_image(b64)
     b64_string_to_file(b64, "test_image_output.jpg")
     nd = b64_to_ndarray(b64)
+    resized_nd = resize_image(nd)
+    print(resized_nd[0][0:5])
     print(nd[0][0:5])
     print(b64[0:20])
