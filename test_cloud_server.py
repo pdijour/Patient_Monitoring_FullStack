@@ -234,3 +234,40 @@ def test_retrieve_all_info():
     patient1.delete()
     expected = expected_info
     assert answer == expected
+
+
+pathname = "/Users/michael.tian/Desktop/BME 547/class_repos/" \
+           "final-project-spooky-dookie/images/test_image.jpg"
+
+
+def test_read_file_as_b64():
+    from cloud_server import read_file_as_b64
+    b64str = read_file_as_b64(pathname)
+    assert b64str[0:20] == "/9j/4AAQSkZJRgABAQEA"
+
+
+def test_b64_string_to_file():
+    from cloud_server import read_file_as_b64
+    from cloud_server import b64_string_to_file
+    import filecmp
+    import os
+    b64str = read_file_as_b64("test_image.jpg")
+    b64_string_to_file(b64str, "test_image_output.jpg")
+    answer = filecmp.cmp("test_image.jpg",
+                         "test_image_output.jpg")
+    os.remove("test_image_output.jpg")
+    assert answer is True
+
+
+def test_b64_to_ndarray():
+    from cloud_server import read_file_as_b64
+    from cloud_server import b64_to_ndarray
+    b64str = read_file_as_b64("test_image.jpg")
+    nd = b64_to_ndarray(b64str)
+    answer = nd[0][0:5]
+    expected = [[ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197],
+                [ 68, 115, 197]]
+    assert (answer == expected).all

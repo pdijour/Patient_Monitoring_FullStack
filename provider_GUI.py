@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 import json
+from cloud_server import b64_to_ndarray, read_file_as_b64
 
 
 server = "http://127.0.0.1:5000"
@@ -17,6 +18,11 @@ def load_and_resize_image(filename):
     resized_image = pil_image.resize((new_width, new_height))
     tk_image = ImageTk.PhotoImage(resized_image)
     return tk_image
+
+
+def display_ndarray(nd):
+    img = ImageTk.PhotoImage(image=Image.fromarray(nd))
+    return img
 
 
 def design_window():
@@ -41,6 +47,8 @@ def design_window():
         variable3.set(patient_info["ecg_images"][0])
         image_selector['values'] = patient_info["medical_images"]
         ecg_selector['values'] = patient_info["ecg_images"]
+
+        new_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -125,7 +133,8 @@ def design_window():
     image_label = ttk.Label(root, image=tk_image)
     image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
-    tk_image2 = load_and_resize_image("images/test_ECG.jpg")
+    latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
+    tk_image2 = display_ndarray(latest_ecg_nd)
     image_label2 = ttk.Label(root, image=tk_image2)
     image_label2.grid(column=0, row=7, columnspan=2)
 
