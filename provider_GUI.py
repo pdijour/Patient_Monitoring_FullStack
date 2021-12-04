@@ -130,17 +130,27 @@ def design_window():
     ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
 
     tk_image = load_and_resize_image("images/acl1.jpg")
-    image_label = ttk.Label(root, image=tk_image)
-    image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
+    medical_image_canvas = tk.Canvas(root, width=250, height=250)
+    #latest_ecg_canvas.create_image(20, 20, anchor="nw", image=tk_image)
+    medical_image_canvas.grid(column=3, row=1, rowspan=4, columnspan=2)
+    #image_label = ttk.Label(root, image=tk_image)
+    #image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
     tk_image2 = display_ndarray(latest_ecg_nd)
-    image_label2 = ttk.Label(root, image=tk_image2)
-    image_label2.grid(column=0, row=7, columnspan=2)
+    latest_ecg_canvas = tk.Canvas(root, width=250, height=250)
+    latest_ecg_canvas.create_image(0, 0, anchor="nw", image=tk_image2)
+    latest_ecg_canvas.grid(column=0, row=7, columnspan=2)
+    #image_label2 = ttk.Label(root, image=tk_image2)
+    #image_label2.grid(column=0, row=7, columnspan=2)
 
     tk_image3 = load_and_resize_image("images/test_ECG.jpg")
-    image_label3 = ttk.Label(root, image=tk_image3)
-    image_label3.grid(column=3, row=7, columnspan=2)
+    ecg_canvas = tk.Canvas(root, width=250, height=250)
+    # latest_ecg_canvas.create_image(20, 20, anchor="nw", image=tk_image)
+    ecg_canvas.grid(column=3, row=7, columnspan=2)
+    #medical_image_canvas.grid(column=3, row=1, rowspan=4, columnspan=2)
+    #image_label3 = ttk.Label(root, image=tk_image3)
+    #image_label3.grid(column=3, row=7, columnspan=2)
 
     save_last_ecg_button = ttk.Button(root, text="Save",
                                       command=save_button_cmd)
