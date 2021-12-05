@@ -9,17 +9,27 @@ from cloud_server import b64_to_ndarray, get_index, \
 server = "http://127.0.0.1:5000"
 
 
-def display_ndarray(nd):
-    img = ImageTk.PhotoImage(image=Image.fromarray(nd))
-    return img
-
-
 def design_window():
+    """
+    Function to house the entire GUI framework
+    """
 
     def cancel_cmd():
+        """
+        Closes the GUI
+        """
         root.destroy()
 
     def refresh():
+        """
+        Function called every 10 seconds to refresh
+        the GUI with updated information from the Mongo
+        database. Refreshes all comboboxes, image choices,
+        and latest ECG and heartrate as well.
+        """
+        r = requests.get(server + "/api/record_numbers")
+        medical_record_options = json.loads(r.text)
+        record_selector['values'] = medical_record_options
         patient_info = update_patient_info()
 
         namelabel.set(patient_info["name"])
@@ -35,65 +45,75 @@ def design_window():
         new_medical_b64 = patient_info["medical_images_b64"][0]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
         resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = display_ndarray(resized_medical_nd)
+        tk_medical_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_medical_nd))
         medical_image_label.configure(image=tk_medical_image)
         medical_image_label.image = tk_medical_image
 
         new_ecg_b64 = patient_info["ecg_images_b64"][0]
         new_ecg_nd = b64_to_ndarray(new_ecg_b64)
         resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = display_ndarray(resized_ecg_nd)
+        tk_ecg_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         ecg_image_label.configure(image=tk_ecg_image)
         ecg_image_label.image = tk_ecg_image
 
         latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
         resized_ecg_nd = resize_image(latest_ecg_nd)
-        tk_latest_ecg = display_ndarray(resized_ecg_nd)
+        tk_latest_ecg = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         latest_ecg_image_label.configure(image=tk_latest_ecg)
         latest_ecg_image_label.image = tk_latest_ecg
         root.after(10000, refresh)
 
     def update_patient_info():
+        """
+        This function is called specifically to perform a post request
+        the server to retrieve all the relevant information about a patient,
+        specified by selection in the first combobox,from the database.
+
+        Returns
+        -------
+        Dict
+            Containing all relevant updated information about selected patient
+        """
         patient_id = int(variable.get())
         r = requests.post(server + "/api/get_info", json=patient_id)
         patient_info = json.loads(r.text)
         return patient_info
 
     def update_info(event):
+        """
+        This function does essentially the same thing as the refresh
+        function but has the event parameter because it is bound to
+        the combobox for the medical record number selection. This
+        way, whenever a different selection is made, the relevant
+        information about that patient is updated on the GUI.
+
+        Parameters
+        ----------
+        event
+            Needed to trigger when bound combobox selection changes
+        """
         patient_info = update_patient_info()
-
-        patient_info = update_patient_info()
-        namelabel.set(patient_info["name"])
-        idlabel.set(patient_info["medical_record_number"])
-        hrlabel.set(patient_info["heart_rates"][-1])
-        dtlabel.set(patient_info["datetimes"][-1])
-
-        variable2.set(patient_info["medical_images"][0])
-        variable3.set(patient_info["datetimes"][0])
-        image_selector['values'] = patient_info["medical_images"]
-        ecg_selector['values'] = patient_info["datetimes"]
-
-        new_medical_b64 = patient_info["medical_images_b64"][0]
-        new_medical_nd = b64_to_ndarray(new_medical_b64)
-        resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = display_ndarray(resized_medical_nd)
-        medical_image_label.configure(image=tk_medical_image)
-        medical_image_label.image = tk_medical_image
-
-        new_ecg_b64 = patient_info["ecg_images_b64"][0]
-        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
-        resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = display_ndarray(resized_ecg_nd)
-        ecg_image_label.configure(image=tk_ecg_image)
-        ecg_image_label.image = tk_ecg_image
-
-        latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
-        resized_ecg_nd = resize_image(latest_ecg_nd)
-        tk_latest_ecg = display_ndarray(resized_ecg_nd)
-        latest_ecg_image_label.configure(image=tk_latest_ecg)
-        latest_ecg_image_label.image = tk_latest_ecg
+        refresh()
 
     def update_medical_image(event):
+        """
+        This function updates the medical image displayed whenever
+        a different selection is made in the medical image combobox.
+        It reads the selected file, gets the index of that file
+        in the medical image list for that patient, then uses that
+        index to retrieve the corresponding b64 string representing
+        that image selected from the parallel b64 list. Then, this
+        b64 string is converted to an ndarray, resized, and then
+        displayed.
+
+        Parameters
+        ----------
+        event
+            Needed to trigger when bound combobox selection changes
+        """
         patient_info = update_patient_info()
 
         selected_image = variable2.get()
@@ -101,11 +121,27 @@ def design_window():
         new_medical_b64 = patient_info["medical_images_b64"][index]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
         resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = display_ndarray(resized_medical_nd)
+        tk_medical_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_medical_nd))
         medical_image_label.configure(image=tk_medical_image)
         medical_image_label.image = tk_medical_image
 
     def update_ecg_image(event):
+        """
+        This function updates the ecg image displayed whenever
+        a different selection is made in the ecg image combobox.
+        It reads the selected file, gets the index of that file
+        in the ecg image list for that patient, then uses that
+        index to retrieve the corresponding b64 string representing
+        that image selected from the parallel b64 list. Then, this
+        b64 string is converted to an ndarray, resized, and then
+        displayed.
+
+        Parameters
+        ----------
+        event
+            Needed to trigger when bound combobox selection changes
+        """
         patient_info = update_patient_info()
 
         selected_image = variable3.get()
@@ -113,11 +149,20 @@ def design_window():
         new_ecg_b64 = patient_info["ecg_images_b64"][index]
         new_ecg_nd = b64_to_ndarray(new_ecg_b64)
         resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = display_ndarray(resized_ecg_nd)
+        tk_ecg_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         ecg_image_label.configure(image=tk_ecg_image)
         ecg_image_label.image = tk_ecg_image
 
     def save_latest_ecg():
+        """
+        This function allows users to save the latest_ecg image
+        displayed in the GUI locally to their computer with a
+        location and name of their choice. First, the filedialogue
+        module asksaveasfile is used to allow users to specify a
+        name and location for the image. Then, if they provide
+        these, the b64 string is retrieved and written into a file.
+        """
         patient_info = update_patient_info()
         filename = filedialog.asksaveasfile(defaultextension=".jpg",
                                             initialfile="Latest_ECG.jpg",
@@ -128,6 +173,14 @@ def design_window():
         b64_string_to_file(latest_ecg_b64, filename)
 
     def save_ecg():
+        """
+        This function allows users to save the selected ecg image
+        displayed in the GUI locally to their computer with a
+        location and name of their choice. First, the filedialogue
+        module asksaveasfile is used to allow users to specify a
+        name and location for the image. Then, if they provide
+        these, the b64 string is retrieved and written into a file.
+        """
         patient_info = update_patient_info()
         filename = filedialog.asksaveasfile(defaultextension=".jpg",
                                             initialfile="ECG.jpg",
@@ -140,6 +193,14 @@ def design_window():
         b64_string_to_file(ecg_b64, filename)
 
     def save_medical_image():
+        """
+        This function allows users to save the selected medcial image
+        displayed in the GUI locally to their computer with a
+        location and name of their choice. First, the filedialogue
+        module asksaveasfile is used to allow users to specify a
+        name and location for the image. Then, if they provide
+        these, the b64 string is retrieved and written into a file.
+        """
         patient_info = update_patient_info()
         filename = filedialog.asksaveasfile(defaultextension=".jpg",
                                             initialfile="Medical_Image.jpg",
@@ -231,21 +292,24 @@ def design_window():
 
     medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
     resized_medical_nd = resize_image(medical_nd)
-    tk_medical_image = display_ndarray(resized_medical_nd)
+    tk_medical_image = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_medical_nd))
     medical_image_label = ttk.Label(root, image=tk_medical_image)
     medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
     resized_ecg_nd = resize_image(latest_ecg_nd)
-    tk_latest_ecg = display_ndarray(resized_ecg_nd)
+    tk_latest_ecg = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_ecg_nd))
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
     latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
     ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][0])
     resized_ecg_nd = resize_image(ecg_nd)
-    tk_ecg_image = display_ndarray(resized_ecg_nd)
+    tk_ecg_image = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_ecg_nd))
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
     ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)

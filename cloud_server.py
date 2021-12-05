@@ -76,12 +76,30 @@ def new_patient():
 
 @app.route("/api/record_numbers", methods=["GET"])
 def id_numbers():
+    """ Called to return the medical record numbers in the database
+
+    This is a "GET" route used to retrieve all the medical record
+    numbers for all patients currently in the Mongo database. The
+    function "list_record_numbers" is used and the returned list
+    is jsonified for easy communication. Nothing needs to be
+    provided since it is a GET route.
+    """
     record_numbers = list_record_numbers()
     return jsonify(record_numbers)
 
 
 @app.route("/api/get_info", methods=["POST"])
 def get_info():
+    """ Called to return all information about a specific patient
+
+    This is a "POST" route that takes in a medical record number and
+    calls the "retrieve_all_info" function to query the database
+    using that record number and return the corresponding Mongo
+    database entry. A dictionary is created and the patient
+    information is transferred to that dictionary under appropriate
+    fields. This dictionary is then jsonified and returned for easy
+    communication.
+    """
     in_data = request.get_json()
     info = retrieve_all_info(in_data)
     return jsonify(info)
@@ -245,6 +263,18 @@ def add_patient_file(patient_name, id_no, medical_file, medical_b64,
 
 
 def list_record_numbers():
+    """Retrieves medical record numbers for all database entries
+
+       This function queries the Mongo database to receive all
+       database entries as an iterable. Then, it parses through
+       each one and appends the medical record number of each
+       entry into a list. Finally, this list is returned.
+
+       Returns
+       -------
+       List
+           Containing record numbers as strings for all database entries
+       """
     results = Patient.objects.raw({})
     all_record_numbers = []
     for item in results:
@@ -253,6 +283,26 @@ def list_record_numbers():
 
 
 def retrieve_all_info(id_no):
+    """Retrieves all information for a specific database entry
+
+       This function queries the Mongo database using the
+       medical record number passed in as a parameter to receive
+       all the information in the database about that patient.
+       It then creates a dictionary to store all the information
+       for the patient in appropriate keys and then returns
+       that dictionary.
+
+       Parameters
+        ----------
+        id_no : Str
+            Contains the medical record number of interest
+
+       Returns
+       -------
+       Dict
+           Containing all the information stored in the database
+           about the patient specified by the record number
+       """
     patient = Patient.objects.raw({"_id": id_no}).first()
     info = {"name": patient.name,
             "medical_record_number": patient.medical_record_number,
@@ -266,6 +316,23 @@ def retrieve_all_info(id_no):
 
 
 def read_file_as_b64(image_path):
+    """Converts an image into a b64 string
+
+       This function takes in the file path for an image
+       and then converts that image into a b64 string for
+       further processing and storage. This b64 string is
+       then returned.
+
+       Parameters
+        ----------
+        image_path : Str
+            Contains the file path to an image
+
+       Returns
+       -------
+       str
+           Containing the converted image as a b64 string
+       """
     with open(image_path, "rb") as image_file:
         b64_bytes = base64.b64encode(image_file.read())
     b64_string = str(b64_bytes, encoding='utf-8')
@@ -273,6 +340,25 @@ def read_file_as_b64(image_path):
 
 
 def b64_string_to_file(b64_string, filewrapper):
+    """Converts a b64 string to an an image file
+
+       This function takes in the b64 string representing
+       an image, decodes it using the b64decode function from
+       the base64 module to convert it into byte format. Then
+       a file specified by the user is opened and the bytes
+       are written in that file to produce an image file.
+       Nothing is returned but the image file will appear locally.
+
+       Parameters
+        ----------
+        b64_string : Str
+            Contains the image in b64 string format
+        filewrapper: io.TextIOWrapper object
+            Contains information about the name and location for
+            the saved image file. This object is returned by the
+            asksaveasfilename function, part of filedialogue in
+            Tkinter
+       """
     image_bytes = base64.b64decode(b64_string)
     with filewrapper as out_file:
         out_file.write(image_bytes)
@@ -280,6 +366,24 @@ def b64_string_to_file(b64_string, filewrapper):
 
 
 def b64_to_ndarray(b64):
+    """Converts a b64 string into an ndarray
+
+       This function takes in the b64 string representing an
+       image file. Then it is converted to an ndarray using
+       functions from the base64 and io modules. This ndarray
+       representation of the iamge is then returned for
+       resizing or displaying purposes.
+
+       Parameters
+        ----------
+        b64 : Str
+            Contains the image in b64 string format
+
+       Returns
+       -------
+       array
+           Containing the converted image as a ndarray
+       """
     image_bytes = base64.b64decode(b64)
     image_buf = io.BytesIO(image_bytes)
     img_ndarray = mpimg.imread(image_buf, format='JPG')
@@ -287,11 +391,47 @@ def b64_to_ndarray(b64):
 
 
 def get_index(listvar, val):
+    """Gets the index of a specified value in a given list
+
+       This function takes in a value and a list and simply
+       searches the list using the index function for the
+       specified value.
+
+       Parameters
+        ----------
+        listvar : list
+            A list containing any type of values to be searched
+        val : Any type
+            A specific value of any type that will be searched
+            for in the list passed in
+
+       Returns
+       -------
+       int
+           Containing the index of the value in the list
+       """
     index = listvar.index(val)
     return index
 
 
 def resize_image(nd):
+    """resizes an image in ndarray form to 250x250
+
+       This function takes in an ndarray representing an image
+       and resizes it to be 250x250. This way, all images are uniform
+       in size, so the GUI does not constantly change shape or become
+       too large. The resized ndarray is then returned
+
+       Parameters
+        ----------
+        nd : array
+            An ndarray representing an image
+
+       Returns
+       -------
+       array
+           Containing the ndarray representing the resized image
+       """
     resized_nd = resize(nd, (250, 250)) * 255
     resized_nd = resized_nd.astype(np.uint8)
     return resized_nd
