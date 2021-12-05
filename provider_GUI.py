@@ -93,7 +93,6 @@ def design_window():
         latest_ecg_image_label.configure(image=tk_latest_ecg)
         latest_ecg_image_label.image = tk_latest_ecg
 
-
     def update_medical_image(event):
         patient_info = update_patient_info()
 
