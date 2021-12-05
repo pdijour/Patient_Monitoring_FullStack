@@ -113,6 +113,26 @@ def test_validate_input(in_data, expected_input, expected_val, expected_code):
     assert result == (expected_val, expected_code)
 
 
+@pytest.mark.parametrize("in_data, expected",
+                         [({"patient_name": "Yume Choi",
+                            "record_number": 5,
+                            "medical_image_files": "y1.png",
+                            "medical_images_b64": "abc123",
+                            "ECG_image_files": "y2.png",
+                            "ECG_images_b64": "def456",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
+                          "Updated patient 5")])
+def test_new_or_old(in_data, expected):
+    from cloud_server import new_or_old
+    from cloud_server import add_database_entry
+    patient = add_database_entry("Yume Choi", 5, "1.png", "abc123", "2.png",
+                                 "def456", 86, "2020-03-09 11:00:36")
+    answer = new_or_old(in_data)
+    patient.delete()
+    assert answer == expected
+
+
 def test_add_database_entry():
     from cloud_server import add_database_entry
     expected_name = "Yume Choi"

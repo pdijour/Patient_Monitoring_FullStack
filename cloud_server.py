@@ -34,7 +34,7 @@ def initialize_server():
 
 @app.route("/", methods=["GET"])
 def status():
-    """Used to indicate that the server is running
+    """ Used to indicate that the server is running
     """
     return "Server is on"
 
@@ -46,28 +46,8 @@ def new_patient():
         validate_input(in_data, expected_input)
     if error_string is not True:
         return error_string, status_code
-    if not find_patient(in_data["record_number"]):
-        # Patient does not already exist in database
-        add_database_entry(in_data["patient_name"],
-                           in_data["record_number"],
-                           in_data["medical_image_files"],
-                           in_data["medical_images_b64"],
-                           in_data["ECG_image_files"],
-                           in_data["ECG_images_b64"],
-                           in_data["heartrates"],
-                           in_data["datetimes"])
-        return "Added patient {}".format(in_data["record_number"])
-    else:
-        # Patient already exists in database
-        add_patient_file(in_data["patient_name"],
-                         in_data["record_number"],
-                         in_data["medical_image_files"],
-                         in_data["medical_images_b64"],
-                         in_data["ECG_image_files"],
-                         in_data["ECG_images_b64"],
-                         in_data["heartrates"],
-                         in_data["datetimes"])
-        return "Updated patient {}".format(in_data["record_number"])
+    answer = new_or_old(in_data)
+    return answer
 
 
 @app.route("/api/record_numbers", methods=["GET"])
@@ -169,6 +149,31 @@ def validate_input(in_data, expected_input):
             if type(in_data[key]) is not expected_input[key]:
                 return "The key {} has the wrong data type".format(key), 400
     return True, 200
+
+
+def new_or_old(in_data):
+    if not find_patient(in_data["record_number"]):
+        # Patient does not already exist in database
+        add_database_entry(in_data["patient_name"],
+                           in_data["record_number"],
+                           in_data["medical_image_files"],
+                           in_data["medical_images_b64"],
+                           in_data["ECG_image_files"],
+                           in_data["ECG_images_b64"],
+                           in_data["heartrates"],
+                           in_data["datetimes"])
+        return "Added patient {}".format(in_data["record_number"])
+    else:
+        # Patient already exists in database
+        add_patient_file(in_data["patient_name"],
+                         in_data["record_number"],
+                         in_data["medical_image_files"],
+                         in_data["medical_images_b64"],
+                         in_data["ECG_image_files"],
+                         in_data["ECG_images_b64"],
+                         in_data["heartrates"],
+                         in_data["datetimes"])
+        return "Updated patient {}".format(in_data["record_number"])
 
 
 def check_int(in_data, key):
