@@ -11,3 +11,4 @@ pandas
 scipy
 datetime
 testfixtures
+scikit-image

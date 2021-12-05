@@ -6,6 +6,12 @@ import logging
 from pymodm import connect
 from database_definitions import Patient
 import base64
+import io
+import matplotlib.image as mpimg
+from matplotlib import pyplot as plt
+from skimage.io import imsave
+from skimage.transform import resize
+import numpy as np
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -20,8 +26,8 @@ def initialize_server():
     logging.basicConfig(filename="patient_record_server.log",
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
-            "final_project?retryWrites=true&w=majority")
+    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
+            "myFirstDatabase?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
@@ -254,9 +260,6 @@ def retrieve_all_info(id_no):
     return info
 
 
-# Just here for me to test in the mean time
-
-
 def read_file_as_b64(image_path):
     with open(image_path, "rb") as image_file:
         b64_bytes = base64.b64encode(image_file.read())
@@ -264,28 +267,56 @@ def read_file_as_b64(image_path):
     return b64_string
 
 
+def b64_string_to_file(b64_string, filewrapper):
+    image_bytes = base64.b64decode(b64_string)
+    with filewrapper as out_file:
+        out_file.write(image_bytes)
+    return None
+
+
+def b64_to_ndarray(b64):
+    image_bytes = base64.b64decode(b64)
+    image_buf = io.BytesIO(image_bytes)
+    img_ndarray = mpimg.imread(image_buf, format='JPG')
+    return img_ndarray
+
+
+def get_index(listvar, val):
+    index = listvar.index(val)
+    return index
+
+
+def resize_image(nd):
+    resized_nd = resize(nd, (250, 250)) * 255
+    resized_nd = resized_nd.astype(np.uint8)
+    return resized_nd
+
+
 if __name__ == '__main__':
     initialize_server()
-    # path = "images/"
-    # images = ["acl1.jpg", "acl2.jpg", "esophagus 1.jpg", "esophagus2.jpg",
-    #           "synpic50411.jpg", "synpic51041.jpg", "synpic51042.jpg",
-    #           "upj1.jpg", "upj2.jpg", "test_ECG.jpg", "test_tachycardia.jpg"]
-    # full_path = []
-    # for i in range(len(images)):
-    #     full_path.append(path + images[i])
-    # b64_images = []
-    # for i in full_path:
-    #     b64_images.append(read_file_as_b64(i))
-    # datetimes = ["2020-03-00 11:00:36", "2020-03-01 11:00:36",
-    #              "2020-03-02 11:00:36"]
-    # patient1 = Patient("Yume Choi", 3, ["acl1.png"], [b64_images[0]],
-    #                    [images[9]], [b64_images[-2]], [85], [datetimes[0]])
-    # patient2 = Patient("Michael Tian", 5, images[0:9], b64_images[0:9],
-    #                    images[9:], b64_images[10:], [85, 90], datetimes[1:])
-    # patient3 = Patient("Phoebe Dijour", 11, ["acl1.png", "acl2.png"],
-    #                    [b64_images[0], b64_images[1]], [images[10]],
-    #                    [b64_images[-1]], [85], [datetimes[0]])
-    # patient1.save()
-    # patient2.save()
-    # patient3.save()
+
+    path = "/Users/michael.tian/Desktop/BME 547/class_repos" \
+           "/final-project-spooky-dookie/images/"
+    images = ["acl1.jpg", "acl2.jpg", "esophagus 1.jpg", "esophagus2.jpg",
+              "synpic50411.jpg", "synpic51041.jpg", "synpic51042.jpg",
+              "upj1.jpg", "upj2.jpg", "test_ECG.jpg", "test_tachycardia.jpg"]
+    full_path = []
+    for i in range(len(images)):
+        full_path.append(path + images[i])
+    b64_images = []
+    for i in full_path:
+        b64_images.append(read_file_as_b64(i))
+    datetimes = ["2020-03-00 11:00:36", "2020-03-01 11:00:36",
+                 "2020-03-02 11:00:36"]
+    patient1 = Patient("Yume Choi", 3, ["acl1.png"], [b64_images[6]],
+                       [images[9]], [b64_images[-2]], [85], [datetimes[0]])
+    patient2 = Patient("Michael Tian", 5, images[0:9], b64_images[0:9],
+                       images[9:], b64_images[9:], [85, 90], datetimes[1:])
+    patient3 = Patient("Phoebe Dijour", 11, ["acl1.png", "acl2.png"],
+                       [b64_images[2], b64_images[3]], [images[10]],
+                       [b64_images[-1]], [85], [datetimes[0]])
+    patient1.save()
+    patient2.save()
+    patient3.save()
+
     app.run()
