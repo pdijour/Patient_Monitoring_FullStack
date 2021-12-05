@@ -267,11 +267,13 @@ def test_retrieve_all_info():
 
 pathname = "/Users/michael.tian/Desktop/BME 547/class_repos/" \
            "final-project-spooky-dookie/images/test_image.jpg"
+pathname = os.getcwd()
+full_pathname = pathname + '/images/test_image.jpg'
 
 
 def test_read_file_as_b64():
     from cloud_server import read_file_as_b64
-    b64str = read_file_as_b64(pathname)
+    b64str = read_file_as_b64(full_pathname)
     assert b64str[0:20] == "/9j/4AAQSkZJRgABAQEA"
 
 # def test_b64_string_to_file():
