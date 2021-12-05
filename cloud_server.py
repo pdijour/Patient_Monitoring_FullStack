@@ -27,8 +27,8 @@ def initialize_server():
                         filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
-            "myFirstDatabase?retryWrites=true&w=majority")
+    connect("mongodb+srv://pdijour:mongopassword@bme547.qubox.mongodb.net/"
+            "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
@@ -221,12 +221,14 @@ def add_database_entry(patient_name, id_no, medical_file, medical_b64,
         patient_name = "N/A"
     patient_to_add = Patient(name=patient_name,
                              medical_record_number=id_no)
-    patient_to_add.medical_images.append(medical_file)
-    patient_to_add.medical_images_b64.append(medical_b64)
-    patient_to_add.ecg_images.append(ecg_file)
-    patient_to_add.ecg_images_b64.append(ecg_b64)
-    patient_to_add.heart_rates.append(bpm)
-    patient_to_add.datetimes.append(timestamp)
+    if medical_file != "":
+        patient_to_add.medical_images.append(medical_file)
+        patient_to_add.medical_images_b64.append(medical_b64)
+    if ecg_file != "":
+        patient_to_add.ecg_images.append(ecg_file)
+        patient_to_add.ecg_images_b64.append(ecg_b64)
+        patient_to_add.heart_rates.append(bpm)
+        patient_to_add.datetimes.append(timestamp)
     answer = patient_to_add.save()
     logging.info("Added new patient into database with id: {}".format(id_no))
     return answer

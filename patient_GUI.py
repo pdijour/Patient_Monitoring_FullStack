@@ -61,11 +61,20 @@ def design_window():
     def upload_button_cmd():
         name = name_data.get()
         record_number = record_data.get()
-        medical_filename = os.path.basename(medical_file_label.name)
-        medical_b64 = convert_image_file_to_b64_string(medical_file_label.name)
-        ecg_filename = os.path.basename(ecg_file_label.name)
-        ecg_b64 = convert_image_file_to_b64_string(ecg_file_label.name)
-        heart_rate = bpm_label.hr
+        try:
+            medical_filename = os.path.basename(medical_file_label.name)
+            medical_b64 = convert_image_file_to_b64_string(medical_file_label.name)
+        except AttributeError:
+            medical_filename = ""
+            medical_b64 = ""
+        try:
+            ecg_filename = os.path.basename(ecg_file_label.name)
+            ecg_b64 = convert_image_file_to_b64_string(ecg_file_label.name)
+            heart_rate = bpm_label.hr
+        except AttributeError:
+            ecg_filename = ""
+            ecg_b64 = ""
+            heart_rate = ""
         time = datetime.now()
         timestamp = datetime.strftime(time, "%Y-%m-%d %H:%M:%S")
         answer = add_files_to_server(name,
@@ -186,7 +195,7 @@ def design_window():
                                command=upload_button_cmd)
     upload_button.grid(column=0, row=7, columnspan=5, pady=[40, 0])
 
-    output_string = ttk.Label(root)
+    output_string = ttk.Label(root, wraplength=500)
     output_string.grid(column=3, row=8)
 
     cancel_button = ttk.Button(root, text="Cancel",

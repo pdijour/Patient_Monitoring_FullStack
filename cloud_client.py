@@ -20,15 +20,19 @@ def main():
     add_files_to_server("Phoebe Dijour", "1", "p1.png", "abc", "p2.png",
                         "abc", "90", "2021-04-15 16:12:23")
 
+    # Add patient with partial data (just ID)
+    add_files_to_server("", "10", "", "", "", "", "", "")
+
+    # Add patient with partial data (name and ID)
+    add_files_to_server("", "11", "", "", "", "", "", "")    
+    
     # Add patient with partial data (medical image)
-    add_files_to_server("", 2, "m1.png", "abc", "", "", "",
+    add_files_to_server("Rachel Lopez", 2, "m1.png", "abc", "", "", "",
                         "")
 
     # Add patient with partial data (name, ecg image)
     add_files_to_server("Michael Tian", 3, "", "", "t2.png", "abc",
                         90, "2018-10-25 09:25:20")
-
-    # Check for missing key
 
     # Check for no medical record number added
     add_files_to_server("Sarah Yu", "", "s1.png", "abc", "s2.png",
