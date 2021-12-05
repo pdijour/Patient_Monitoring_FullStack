@@ -15,11 +15,11 @@ server = "http://127.0.0.1:5000"
 
 def load_and_resize_image(filename):
     pil_image = Image.open(filename)
-    original_size = pil_image.size
-    adj_factor = 0.5
-    new_width = round(original_size[0] * adj_factor)
-    new_height = round(original_size[1] * adj_factor)
-    resized_image = pil_image.resize((new_width, new_height))
+    # original_size = pil_image.size
+    # adj_factor = 0.5
+    # new_width = round(original_size[0] * adj_factor)
+    # new_height = round(original_size[1] * adj_factor)
+    resized_image = pil_image.resize((250, 250))
     tk_image = ImageTk.PhotoImage(resized_image)
     return tk_image, filename
 

@@ -24,6 +24,7 @@ def initialize_server():
     with the MongoDB database.
     """
     logging.basicConfig(filename="patient_record_server.log",
+                        filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
     connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
@@ -55,6 +56,8 @@ def new_patient():
                            in_data["ECG_images_b64"],
                            in_data["heartrates"],
                            in_data["datetimes"])
+        logging.info("Added new patient with id: {}"
+                     .format(in_data["record_number"]))
         return "Added patient {}".format(in_data["record_number"])
     else:
         # Patient already exists in database
@@ -66,6 +69,8 @@ def new_patient():
                          in_data["ECG_images_b64"],
                          in_data["heartrates"],
                          in_data["datetimes"])
+        logging.info("Edited info of patient with id: {}"
+                     .format(in_data["record_number"]))
         return "Added file for patient {}".format(in_data["record_number"])
 
 

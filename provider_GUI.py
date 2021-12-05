@@ -5,8 +5,6 @@ import requests
 import json
 from cloud_server import b64_to_ndarray, get_index, \
     resize_image, b64_string_to_file
-import base64
-import os
 
 server = "http://127.0.0.1:5000"
 
@@ -21,8 +19,9 @@ def design_window():
     def cancel_cmd():
         root.destroy()
 
-    def save_button_cmd():
-        return "Saved!"
+    # def refresh():
+    #     update_info()
+    #     root.after(10000, refresh)
 
     def update_patient_info():
         patient_id = int(variable.get())
@@ -33,6 +32,7 @@ def design_window():
     def update_info(event):
         patient_info = update_patient_info()
 
+        patient_info = update_patient_info()
         namelabel.set(patient_info["name"])
         idlabel.set(patient_info["medical_record_number"])
         hrlabel.set(patient_info["heart_rates"][-1])
@@ -62,6 +62,7 @@ def design_window():
         tk_latest_ecg = display_ndarray(resized_ecg_nd)
         latest_ecg_image_label.configure(image=tk_latest_ecg)
         latest_ecg_image_label.image = tk_latest_ecg
+
 
     def update_medical_image(event):
         patient_info = update_patient_info()
@@ -132,7 +133,7 @@ def design_window():
     medical_record_options = json.loads(r.text)
 
     variable = tk.StringVar(root)
-    variable.set(json.loads(r.text)[1])
+    variable.set(medical_record_options[0])
     record_selector = ttk.Combobox(root, textvariable=variable)
     record_selector['values'] = medical_record_options
     record_selector['state'] = 'readonly'
@@ -140,7 +141,6 @@ def design_window():
 
     record_selector.bind('<<ComboboxSelected>>', update_info)
 
-    # Read Selected option and use post request to get all the info
     patient_info = update_patient_info()
 
     ttk.Label(root, text="Patient Name") \
@@ -204,18 +204,21 @@ def design_window():
     resized_medical_nd = resize_image(medical_nd)
     tk_medical_image = display_ndarray(resized_medical_nd)
     medical_image_label = ttk.Label(root, image=tk_medical_image)
+    medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
     resized_ecg_nd = resize_image(latest_ecg_nd)
     tk_latest_ecg = display_ndarray(resized_ecg_nd)
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
+    latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
     ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][0])
     resized_ecg_nd = resize_image(ecg_nd)
     tk_ecg_image = display_ndarray(resized_ecg_nd)
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
+    ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)
 
     save_last_ecg_button = ttk.Button(root, text="Save",
@@ -229,6 +232,8 @@ def design_window():
     save_medical_image_button = ttk.Button(root, text="Save",
                                            command=save_medical_image)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
+
+   # refresh()
 
     root.mainloop()
 
