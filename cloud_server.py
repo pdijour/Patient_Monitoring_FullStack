@@ -26,8 +26,8 @@ def initialize_server():
     logging.basicConfig(filename="patient_record_server.log",
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
-            "final_project?retryWrites=true&w=majority")
+    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
+            "myFirstDatabase?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 

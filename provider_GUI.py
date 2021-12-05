@@ -39,9 +39,9 @@ def design_window():
         dtlabel.set(patient_info["datetimes"][-1])
 
         variable2.set(patient_info["medical_images"][0])
-        variable3.set(patient_info["ecg_images"][0])
+        variable3.set(patient_info["datetimes"][0])
         image_selector['values'] = patient_info["medical_images"]
-        ecg_selector['values'] = patient_info["ecg_images"]
+        ecg_selector['values'] = patient_info["datetimes"]
 
         new_medical_b64 = patient_info["medical_images_b64"][0]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
@@ -79,7 +79,7 @@ def design_window():
         patient_info = update_patient_info()
 
         selected_image = variable3.get()
-        index = get_index(patient_info["ecg_images"], selected_image)
+        index = get_index(patient_info["datetimes"], selected_image)
         new_ecg_b64 = patient_info["ecg_images_b64"][index]
         new_ecg_nd = b64_to_ndarray(new_ecg_b64)
         resized_ecg_nd = resize_image(new_ecg_nd)
@@ -105,7 +105,7 @@ def design_window():
         if not filename:
             return
         selected_image = variable3.get()
-        index = get_index(patient_info["ecg_images"], selected_image)
+        index = get_index(patient_info["datetimes"], selected_image)
         ecg_b64 = patient_info["ecg_images_b64"][index]
         b64_string_to_file(ecg_b64, filename)
 
@@ -191,7 +191,7 @@ def design_window():
 
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
-    ecg_image_options = patient_info["ecg_images"]
+    ecg_image_options = patient_info["datetimes"]
     variable3 = tk.StringVar(root)
     variable3.set(ecg_image_options[0])
     ecg_selector = ttk.Combobox(root, textvariable=variable3)

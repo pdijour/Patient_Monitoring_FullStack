@@ -274,7 +274,6 @@ def test_read_file_as_b64():
     b64str = read_file_as_b64(pathname)
     assert b64str[0:20] == "/9j/4AAQSkZJRgABAQEA"
 
-
 # def test_b64_string_to_file():
 #     from cloud_server import read_file_as_b64
 #     from cloud_server import b64_string_to_file
