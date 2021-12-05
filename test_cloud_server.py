@@ -156,7 +156,7 @@ def test_add_patient_file_is_made():
                          "def456", 90, "2021-04-10 12:11:59")
         entry_to_delete.delete()
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"),
-                ("root", "INFO", "Added new file for patient with id: 5"))
+                ("root", "INFO", "Updated patient with id: 5"))
 
 
 entry_to_delete1 = add_database_entry("Max Silver", 9, "1.png", "m1", "2.png",
@@ -222,7 +222,7 @@ def test_patient_name_change():
     log_c.check(('root', 'INFO', 'Added new patient into database with id: 3'),
                 ('root', 'WARNING', 'Entered patient name does not match '
                  'records for 3. Patient name will now be set to Youme Choi'),
-                ('root', 'INFO', 'Added new file for patient with id: 3'))
+                ('root', 'INFO', 'Updated patient with id: 3'))
 
 
 def test_list_record_numbers():

@@ -50,9 +50,12 @@ def add_files_to_server(patient_name, id_no, medical_files,
 
 
 def convert_image_file_to_b64_string(filename):
-    with open(filename, "rb") as image_file:
-        b64_bytes = base64.b64encode(image_file.read())
-    b64_string = str(b64_bytes, encoding='utf-8')
+    try:
+        with open(filename, "rb") as image_file:
+            b64_bytes = base64.b64encode(image_file.read())
+        b64_string = str(b64_bytes, encoding='utf-8')
+    except FileNotFoundError:
+        return "no file"
     return b64_string
 
 
@@ -88,11 +91,13 @@ def design_window():
         output_string.configure(text=answer)
 
     def clear_ecg_cmd():
+        ecg_file_label.name = ''
         ecg_file_label.config(text='')
         ecg_image_label.config(image='')
         bpm_label.config(text='')
 
     def clear_medical_cmd():
+        medical_file_label.name = ''
         medical_file_label.config(text='')
         medical_image_label.config(image='')
 
@@ -104,6 +109,8 @@ def design_window():
         filename_png = "{}.png".format(filename.strip(".csv"))
         if filename == "":
             messagebox.showinfo("Cancel", "You cancelled the file selection")
+            return
+        elif filename == "no file":
             return
         overall_plotting(filename)
         hr = overall_rate(filename)
@@ -120,6 +127,8 @@ def design_window():
                                [("Picture files", ".png .jpg .jpeg")])
         if filename == "":
             messagebox.showinfo("Cancel", "You cancelled the image load")
+            return
+        elif filename == "no file":
             return
         tk_image, filename = load_and_resize_image(filename)
         medical_image_label.configure(image=tk_image)

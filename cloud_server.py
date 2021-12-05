@@ -27,7 +27,7 @@ def initialize_server():
                         filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.qubox.mongodb.net/"
+    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
             "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
@@ -56,8 +56,6 @@ def new_patient():
                            in_data["ECG_images_b64"],
                            in_data["heartrates"],
                            in_data["datetimes"])
-        logging.info("Added new patient with id: {}"
-                     .format(in_data["record_number"]))
         return "Added patient {}".format(in_data["record_number"])
     else:
         # Patient already exists in database
@@ -69,9 +67,7 @@ def new_patient():
                          in_data["ECG_images_b64"],
                          in_data["heartrates"],
                          in_data["datetimes"])
-        logging.info("Edited info of patient with id: {}"
-                     .format(in_data["record_number"]))
-        return "Added file for patient {}".format(in_data["record_number"])
+        return "Updated patient {}".format(in_data["record_number"])
 
 
 @app.route("/api/record_numbers", methods=["GET"])
@@ -260,7 +256,7 @@ def add_patient_file(patient_name, id_no, medical_file, medical_b64,
         patient.heart_rates.append(bpm)
         patient.datetimes.append(timestamp)
     patient.save()
-    logging.info("Added new file for patient with id: {}".format(id_no))
+    logging.info("Updated patient with id: {}".format(id_no))
     return patient
 
 

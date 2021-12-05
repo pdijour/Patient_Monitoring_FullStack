@@ -24,10 +24,10 @@ def main():
     add_files_to_server("", "10", "", "", "", "", "", "")
 
     # Add patient with partial data (name and ID)
-    add_files_to_server("", "11", "", "", "", "", "", "")    
+    add_files_to_server("Rachel Lopez", "11", "", "", "", "", "", "")    
     
     # Add patient with partial data (medical image)
-    add_files_to_server("Rachel Lopez", 2, "m1.png", "abc", "", "", "",
+    add_files_to_server("", 2, "m1.png", "abc", "", "", "",
                         "")
 
     # Add patient with partial data (name, ecg image)
