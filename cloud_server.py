@@ -26,8 +26,8 @@ def initialize_server():
     logging.basicConfig(filename="patient_record_server.log",
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
-            "myFirstDatabase?retryWrites=true&w=majority")
+    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
+            "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
@@ -50,7 +50,9 @@ def new_patient():
         add_database_entry(in_data["patient_name"],
                            in_data["record_number"],
                            in_data["medical_image_files"],
+                           in_data["medical_images_b64"],
                            in_data["ECG_image_files"],
+                           in_data["ECG_images_b64"],
                            in_data["heartrates"],
                            in_data["datetimes"])
         return "Added patient {}".format(in_data["record_number"])
@@ -59,18 +61,12 @@ def new_patient():
         add_patient_file(in_data["patient_name"],
                          in_data["record_number"],
                          in_data["medical_image_files"],
+                         in_data["medical_images_b64"],
                          in_data["ECG_image_files"],
+                         in_data["ECG_images_b64"],
                          in_data["heartrates"],
                          in_data["datetimes"])
         return "Added file for patient {}".format(in_data["record_number"])
-
-
-@app.route("/api/add_image", methods=["POST"])
-def new_image():
-    in_data = request.get_json()
-    b64_string = in_data["image"]
-    filename = in_data["filename"]
-    return filename
 
 
 @app.route("/api/record_numbers", methods=["GET"])
@@ -89,7 +85,9 @@ def get_info():
 expected_input = {"patient_name": str,
                   "record_number": int,
                   "medical_image_files": str,
+                  "medical_images_b64": str,
                   "ECG_image_files": str,
+                  "ECG_images_b64": str,
                   "heartrates": int,
                   "datetimes": str}
 
@@ -194,14 +192,16 @@ def check_int(in_data, key):
     return in_data
 
 
-def add_database_entry(patient_name, id_no, medical_file,
-                       ecg_file, bpm, timestamp):
+def add_database_entry(patient_name, id_no, medical_file, medical_b64,
+                       ecg_file, ecg_b64, bpm, timestamp):
     if patient_name == "":
         patient_name = "N/A"
     patient_to_add = Patient(name=patient_name,
                              medical_record_number=id_no)
     patient_to_add.medical_images.append(medical_file)
+    patient_to_add.medical_images_b64.append(medical_b64)
     patient_to_add.ecg_images.append(ecg_file)
+    patient_to_add.ecg_images_b64.append(ecg_b64)
     patient_to_add.heart_rates.append(bpm)
     patient_to_add.datetimes.append(timestamp)
     answer = patient_to_add.save()
@@ -217,8 +217,8 @@ def find_patient(id_no):
     return patient
 
 
-def add_patient_file(patient_name, id_no, medical_file,
-                     ecg_file, bpm, timestamp):
+def add_patient_file(patient_name, id_no, medical_file, medical_b64,
+                     ecg_file, ecg_b64, bpm, timestamp):
     patient = find_patient(id_no)
     if patient_name != "":
         if patient_name != patient.name:
@@ -228,8 +228,10 @@ def add_patient_file(patient_name, id_no, medical_file,
             patient.name = patient_name
     if medical_file != "":
         patient.medical_images.append(medical_file)
+        patient.medical_images_b64.append(medical_b64)
     if ecg_file != "":
         patient.ecg_images.append(ecg_file)
+        patient.ecg_images_b64.append(ecg_b64)
         patient.heart_rates.append(bpm)
         patient.datetimes.append(timestamp)
     patient.save()
@@ -292,6 +294,7 @@ def resize_image(nd):
 
 if __name__ == '__main__':
     initialize_server()
+
     path = "/Users/michael.tian/Desktop/BME 547/class_repos" \
            "/final-project-spooky-dookie/images/"
     images = ["acl1.jpg", "acl2.jpg", "esophagus 1.jpg", "esophagus2.jpg",
@@ -315,4 +318,5 @@ if __name__ == '__main__':
     patient1.save()
     patient2.save()
     patient3.save()
+
     app.run()

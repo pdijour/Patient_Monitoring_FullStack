@@ -5,8 +5,12 @@ from tkinter import ttk, filedialog, messagebox, Scrollbar
 from PIL import Image, ImageTk
 from ecg_analysis import overall_plotting, overall_rate
 from datetime import datetime
-from cloud_client import add_files_to_server, send_image_to_server
 import os
+import requests
+import base64
+
+
+server = "http://127.0.0.1:5000"
 
 
 def load_and_resize_image(filename):
@@ -26,31 +30,62 @@ def change_file(starting, type):
     return filename
 
 
+def add_files_to_server(patient_name, id_no, medical_files,
+                        medical_files_b64, ecg_files, ecg_files_b64,
+                        bpms, timestamps):
+    """ Makes request to server to add specified patient information
+    """
+    patient1 = {"patient_name": patient_name,
+                "record_number": id_no,
+                "medical_image_files": medical_files,
+                "medical_images_b64": medical_files_b64,
+                "ECG_image_files": ecg_files,
+                "ECG_images_b64": ecg_files_b64,
+                "heartrates": bpms,
+                "datetimes": timestamps}
+    r = requests.post(server + "/api/add_files", json=patient1)
+    print(r.status_code)
+    print(r.text)
+    return r.text
+
+
+def convert_image_file_to_b64_string(filename):
+    with open(filename, "rb") as image_file:
+        b64_bytes = base64.b64encode(image_file.read())
+    b64_string = str(b64_bytes, encoding='utf-8')
+    return b64_string
+
+
 def design_window():
 
     def upload_button_cmd():
         name = name_data.get()
         record_number = record_data.get()
         medical_filename = os.path.basename(medical_file_label.name)
+        medical_b64 = convert_image_file_to_b64_string(medical_file_label.name)
         ecg_filename = os.path.basename(ecg_file_label.name)
+        ecg_b64 = convert_image_file_to_b64_string(ecg_file_label.name)
         heart_rate = bpm_label.hr
         time = datetime.now()
         timestamp = datetime.strftime(time, "%Y-%m-%d %H:%M:%S")
-        print(name)
-        print(record_number)
-        print(heart_rate)
-        print(timestamp)
-        if ecg_file_label.name != "":
-            send_image_to_server(ecg_file_label.name)
-        if medical_file_label.name != "":
-            send_image_to_server(medical_file_label.name)
         answer = add_files_to_server(name,
                                      record_number,
                                      medical_filename,
+                                     medical_b64,
                                      ecg_filename,
+                                     ecg_b64,
                                      heart_rate,
                                      timestamp)
         output_string.configure(text=answer)
+
+    def clear_ecg_cmd():
+        ecg_file_label.config(text='')
+        ecg_image_label.config(image='')
+        bpm_label.config(text='')
+
+    def clear_medical_cmd():
+        medical_file_label.config(text='')
+        medical_image_label.config(image='')
 
     def cancel_cmd():
         root.destroy()
@@ -110,7 +145,7 @@ def design_window():
     medical_image_label.grid(column=0, row=4, columnspan=2, padx=20, pady=20)
 
     medical_file_label = ttk.Label(root, text=medical_filename, wraplength=200)
-    medical_file_label.grid(column=1, row=3, sticky='w', padx=20)
+    medical_file_label.grid(column=0, row=3, columnspan=2, padx=20)
 
     change_picture_btn = ttk.Button(root, text="Change Picture",
                                     command=change_medical_picture_cmd)
@@ -125,7 +160,7 @@ def design_window():
     ecg_image_label.grid(column=3, row=4, columnspan=2, padx=20, pady=20)
 
     ecg_file_label = ttk.Label(root, text=ecg_filename, wraplength=200)
-    ecg_file_label.grid(column=4, row=3, sticky='w', padx=20)
+    ecg_file_label.grid(column=3, row=3, columnspan=2, padx=20)
 
     change_picture_btn = ttk.Button(root, text="Choose ECG Data to Display",
                                     command=change_ecg_picture_cmd)
@@ -139,16 +174,24 @@ def design_window():
     bpm_label = ttk.Label(root, text=hr)
     bpm_label.grid(column=4, row=5, sticky='w', padx=20, pady=20)
 
+    clear_medical_button = ttk.Button(root, text="Clear Medical Image",
+                                      command=clear_medical_cmd)
+    clear_medical_button.grid(column=0, row=6, columnspan=2)
+
+    clear_ecg_button = ttk.Button(root, text="Clear ECG Image",
+                                  command=clear_ecg_cmd)
+    clear_ecg_button.grid(column=3, row=6, columnspan=2)
+
     upload_button = ttk.Button(root, text="Upload",
                                command=upload_button_cmd)
-    upload_button.grid(column=3, row=6, columnspan=2)
+    upload_button.grid(column=0, row=7, columnspan=5, pady=[40, 0])
 
     output_string = ttk.Label(root)
-    output_string.grid(column=3, row=7)
+    output_string.grid(column=3, row=8)
 
     cancel_button = ttk.Button(root, text="Cancel",
                                command=cancel_cmd)
-    cancel_button.grid(column=5, row=6)
+    cancel_button.grid(column=5, row=7, pady=[40, 0])
 
     root.mainloop()
 
