@@ -45,23 +45,23 @@ def design_window():
         new_medical_b64 = patient_info["medical_images_b64"][0]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
         resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_medical_nd))
+        tk_medical_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_medical_nd))
         medical_image_label.configure(image=tk_medical_image)
         medical_image_label.image = tk_medical_image
 
         new_ecg_b64 = patient_info["ecg_images_b64"][0]
         new_ecg_nd = b64_to_ndarray(new_ecg_b64)
         resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_ecg_nd))
+        tk_ecg_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         ecg_image_label.configure(image=tk_ecg_image)
         ecg_image_label.image = tk_ecg_image
 
         latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
         resized_ecg_nd = resize_image(latest_ecg_nd)
-        tk_latest_ecg = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_ecg_nd))
+        tk_latest_ecg = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         latest_ecg_image_label.configure(image=tk_latest_ecg)
         latest_ecg_image_label.image = tk_latest_ecg
         root.after(10000, refresh)
@@ -121,8 +121,8 @@ def design_window():
         new_medical_b64 = patient_info["medical_images_b64"][index]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
         resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_medical_nd))
+        tk_medical_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_medical_nd))
         medical_image_label.configure(image=tk_medical_image)
         medical_image_label.image = tk_medical_image
 
@@ -149,8 +149,8 @@ def design_window():
         new_ecg_b64 = patient_info["ecg_images_b64"][index]
         new_ecg_nd = b64_to_ndarray(new_ecg_b64)
         resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_ecg_nd))
+        tk_ecg_image = ImageTk.\
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
         ecg_image_label.configure(image=tk_ecg_image)
         ecg_image_label.image = tk_ecg_image
 
@@ -292,24 +292,24 @@ def design_window():
 
     medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
     resized_medical_nd = resize_image(medical_nd)
-    tk_medical_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_medical_nd))
+    tk_medical_image = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_medical_nd))
     medical_image_label = ttk.Label(root, image=tk_medical_image)
     medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
     resized_ecg_nd = resize_image(latest_ecg_nd)
-    tk_latest_ecg = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_ecg_nd))
+    tk_latest_ecg = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_ecg_nd))
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
     latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
     ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][0])
     resized_ecg_nd = resize_image(ecg_nd)
-    tk_ecg_image = ImageTk.PhotoImage\
-            (image=Image.fromarray(resized_ecg_nd))
+    tk_ecg_image = ImageTk.\
+        PhotoImage(image=Image.fromarray(resized_ecg_nd))
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
     ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)
