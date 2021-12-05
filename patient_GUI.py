@@ -77,11 +77,15 @@ def design_window():
                                      heart_rate,
                                      timestamp)
         output_string.configure(text=answer)
-        medical_file_label.config(text='')
+
+    def clear_ecg_cmd():
         ecg_file_label.config(text='')
-        medical_image_label.config(image='')
         ecg_image_label.config(image='')
         bpm_label.config(text='')
+
+    def clear_medical_cmd():
+        medical_file_label.config(text='')
+        medical_image_label.config(image='')
 
     def cancel_cmd():
         root.destroy()
@@ -141,7 +145,7 @@ def design_window():
     medical_image_label.grid(column=0, row=4, columnspan=2, padx=20, pady=20)
 
     medical_file_label = ttk.Label(root, text=medical_filename, wraplength=200)
-    medical_file_label.grid(column=1, row=3, sticky='w', padx=20)
+    medical_file_label.grid(column=0, row=3, columnspan=2, padx=20)
 
     change_picture_btn = ttk.Button(root, text="Change Picture",
                                     command=change_medical_picture_cmd)
@@ -156,7 +160,7 @@ def design_window():
     ecg_image_label.grid(column=3, row=4, columnspan=2, padx=20, pady=20)
 
     ecg_file_label = ttk.Label(root, text=ecg_filename, wraplength=200)
-    ecg_file_label.grid(column=4, row=3, sticky='w', padx=20)
+    ecg_file_label.grid(column=3, row=3, columnspan=2, padx=20)
 
     change_picture_btn = ttk.Button(root, text="Choose ECG Data to Display",
                                     command=change_ecg_picture_cmd)
@@ -170,16 +174,24 @@ def design_window():
     bpm_label = ttk.Label(root, text=hr)
     bpm_label.grid(column=4, row=5, sticky='w', padx=20, pady=20)
 
+    clear_medical_button = ttk.Button(root, text="Clear Medical Image",
+                                      command=clear_medical_cmd)
+    clear_medical_button.grid(column=0, row=6, columnspan=2)
+
+    clear_ecg_button = ttk.Button(root, text="Clear ECG Image",
+                                  command=clear_ecg_cmd)
+    clear_ecg_button.grid(column=3, row=6, columnspan=2)
+
     upload_button = ttk.Button(root, text="Upload",
                                command=upload_button_cmd)
-    upload_button.grid(column=3, row=6, columnspan=2)
+    upload_button.grid(column=0, row=7, columnspan=5, pady=[40, 0])
 
     output_string = ttk.Label(root)
-    output_string.grid(column=3, row=7)
+    output_string.grid(column=3, row=8)
 
     cancel_button = ttk.Button(root, text="Cancel",
                                command=cancel_cmd)
-    cancel_button.grid(column=5, row=6)
+    cancel_button.grid(column=5, row=7, pady=[40, 0])
 
     root.mainloop()
 
