@@ -23,8 +23,8 @@ def initialize_server():
     This function initializes the server log as well as creates a connection
     with the MongoDB database.
     """
-    logging.basicConfig(filename="patient_record_server.log",
-                        level=logging.DEBUG)
+    # logging.basicConfig(filename="patient_record_server.log",
+    #                     level=logging.DEBUG)
     print("Connecting to MongoDB...")
     connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
             "myFirstDatabase?retryWrites=true&w=majority")

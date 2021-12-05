@@ -9,25 +9,9 @@ from cloud_server import b64_to_ndarray, get_index, resize_image
 server = "http://127.0.0.1:5000"
 
 
-def load_and_resize_image(filename):
-    pil_image = Image.open(filename)
-    original_size = pil_image.size
-    adj_factor = 0.5
-    new_width = round(original_size[0] * adj_factor)
-    new_height = round(original_size[1] * adj_factor)
-    resized_image = pil_image.resize((new_width, new_height))
-    tk_image = ImageTk.PhotoImage(resized_image)
-    return tk_image
-
-
 def display_ndarray(nd):
     img = ImageTk.PhotoImage(image=Image.fromarray(nd))
     return img
-
-    # pil_image = Image.fromarray(nd)
-    # resized_pil_image = pil_image.resize((250, 250), Image.ANTIALIAS)
-    # img = ImageTk.PhotoImage(resized_pil_image)
-    # return img
 
 
 def design_window():
@@ -38,10 +22,14 @@ def design_window():
     def save_button_cmd():
         return "Saved!"
 
-    def update_info(event):
+    def update_patient_info():
         patient_id = int(variable.get())
         r = requests.post(server + "/api/get_info", json=patient_id)
         patient_info = json.loads(r.text)
+        return patient_info
+
+    def update_info(event):
+        patient_info = update_patient_info()
 
         namelabel.set(patient_info["name"])
         idlabel.set(patient_info["medical_record_number"])
@@ -56,12 +44,28 @@ def design_window():
         new_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
 
     def update_medical_image(event):
+        patient_info = update_patient_info()
+
         selected_image = variable2.get()
         index = get_index(patient_info["medical_images"], selected_image)
         new_medical_b64 = patient_info["medical_images_b64"][index]
         new_medical_nd = b64_to_ndarray(new_medical_b64)
-        tk_medical_image = display_ndarray(new_medical_nd)
-        medical_image_canvas.create_image(0, 0, anchor="nw", image=tk_medical_image)
+        resized_medical_nd = resize_image(new_medical_nd)
+        tk_medical_image = display_ndarray(resized_medical_nd)
+        medical_image_label.configure(image=tk_medical_image)
+        medical_image_label.image = tk_medical_image
+
+    def update_ecg_image(event):
+        patient_info = update_patient_info()
+
+        selected_image = variable3.get()
+        index = get_index(patient_info["ecg_images"], selected_image)
+        new_ecg_b64 = patient_info["ecg_images_b64"][index]
+        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
+        resized_ecg_nd = resize_image(new_ecg_nd)
+        tk_ecg_image = display_ndarray(resized_ecg_nd)
+        ecg_image_label.configure(image=tk_ecg_image)
+        ecg_image_label.image = tk_ecg_image
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -83,9 +87,7 @@ def design_window():
     record_selector.bind('<<ComboboxSelected>>', update_info)
 
     # Read Selected option and use post request to get all the info
-    patient_id = int(variable.get())
-    r = requests.post(server + "/api/get_info", json=patient_id)
-    patient_info = json.loads(r.text)
+    patient_info = update_patient_info()
 
     ttk.Label(root, text="Patient Name") \
         .grid(column=0, row=2, sticky='w', padx=20, pady=20)
@@ -142,34 +144,25 @@ def design_window():
     ecg_selector['values'] = ecg_image_options
     ecg_selector['state'] = 'readonly'
     ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
+    ecg_selector.bind('<<ComboboxSelected>>', update_ecg_image)
 
-    #tk_image = load_and_resize_image("images/acl1.jpg")
-    new_medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
-    tk_medical_image = display_ndarray(new_medical_nd)
-    medical_image_canvas = tk.Canvas(root, width=250, height=250)
-
-    #latest_ecg_canvas.create_image(20, 20, anchor="nw", image=tk_image)
-    medical_image_canvas.grid(column=3, row=1, rowspan=4, columnspan=2)
-    #image_label = ttk.Label(root, image=tk_image)
-    #image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
-    medical_image_canvas.create_image(0, 0, anchor="nw", image=tk_medical_image)
+    medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
+    resized_medical_nd = resize_image(medical_nd)
+    tk_medical_image = display_ndarray(resized_medical_nd)
+    medical_image_label = ttk.Label(root, image=tk_medical_image)
+    medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
     latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
     resized_ecg_nd = resize_image(latest_ecg_nd)
-    tk_image2 = display_ndarray(resized_ecg_nd)
-    latest_ecg_canvas = tk.Canvas(root, width=250, height=250)
-    latest_ecg_canvas.create_image(0, 0, anchor="nw", image=tk_image2)
-    latest_ecg_canvas.grid(column=0, row=7, columnspan=2)
-    #image_label2 = ttk.Label(root, image=tk_image2)
-    #image_label2.grid(column=0, row=7, columnspan=2)
+    tk_latest_ecg = display_ndarray(resized_ecg_nd)
+    latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
+    latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
-    tk_image3 = load_and_resize_image("images/test_ECG.jpg")
-    ecg_canvas = tk.Canvas(root, width=250, height=250)
-    # latest_ecg_canvas.create_image(20, 20, anchor="nw", image=tk_image)
-    ecg_canvas.grid(column=3, row=7, columnspan=2)
-    #medical_image_canvas.grid(column=3, row=1, rowspan=4, columnspan=2)
-    #image_label3 = ttk.Label(root, image=tk_image3)
-    #image_label3.grid(column=3, row=7, columnspan=2)
+    ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][0])
+    resized_ecg_nd = resize_image(ecg_nd)
+    tk_ecg_image = display_ndarray(resized_ecg_nd)
+    ecg_image_label = ttk.Label(root, image=tk_ecg_image)
+    ecg_image_label.grid(column=3, row=7, columnspan=2)
 
     save_last_ecg_button = ttk.Button(root, text="Save",
                                       command=save_button_cmd)
