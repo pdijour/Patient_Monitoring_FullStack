@@ -285,7 +285,7 @@ def test_get_index(listvar, val, expected):
     assert answer == expected
 
 
-def test_resize_nd():
+def test_resize_image():
     from cloud_server import read_file_as_b64
     from cloud_server import b64_to_ndarray
     from cloud_server import resize_image

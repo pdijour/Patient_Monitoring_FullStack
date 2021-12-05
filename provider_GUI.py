@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 import json
-from cloud_server import b64_to_ndarray, get_index, resize_image
+from cloud_server import b64_to_ndarray, get_index, resize_image, b64_string_to_file
 
 
 server = "http://127.0.0.1:5000"
@@ -41,7 +41,25 @@ def design_window():
         image_selector['values'] = patient_info["medical_images"]
         ecg_selector['values'] = patient_info["ecg_images"]
 
-        new_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
+        new_medical_b64 = patient_info["medical_images_b64"][0]
+        new_medical_nd = b64_to_ndarray(new_medical_b64)
+        resized_medical_nd = resize_image(new_medical_nd)
+        tk_medical_image = display_ndarray(resized_medical_nd)
+        medical_image_label.configure(image=tk_medical_image)
+        medical_image_label.image = tk_medical_image
+
+        new_ecg_b64 = patient_info["ecg_images_b64"][0]
+        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
+        resized_ecg_nd = resize_image(new_ecg_nd)
+        tk_ecg_image = display_ndarray(resized_ecg_nd)
+        ecg_image_label.configure(image=tk_ecg_image)
+        ecg_image_label.image = tk_ecg_image
+
+        latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
+        resized_ecg_nd = resize_image(latest_ecg_nd)
+        tk_latest_ecg = display_ndarray(resized_ecg_nd)
+        latest_ecg_image_label.configure(image=tk_latest_ecg)
+        latest_ecg_image_label.image = tk_latest_ecg
 
     def update_medical_image(event):
         patient_info = update_patient_info()
@@ -66,6 +84,14 @@ def design_window():
         tk_ecg_image = display_ndarray(resized_ecg_nd)
         ecg_image_label.configure(image=tk_ecg_image)
         ecg_image_label.image = tk_ecg_image
+
+    def save_latest_ecg():
+        patient_info = update_patient_info()
+        filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+        if not filename:
+            return
+        latest_ecg_b64 = patient_info["ecg_images_b64"][-1]
+        b64_string_to_file(latest_ecg_b64, filename)
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -165,7 +191,7 @@ def design_window():
     ecg_image_label.grid(column=3, row=7, columnspan=2)
 
     save_last_ecg_button = ttk.Button(root, text="Save",
-                                      command=save_button_cmd)
+                                      command=save_latest_ecg)
     save_last_ecg_button.grid(column=0, row=8, columnspan=2)
 
     save_selected_ecg_button = ttk.Button(root, text="Save",

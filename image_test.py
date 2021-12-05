@@ -43,6 +43,7 @@ def b64_to_ndarray(b64):
     img_ndarray = mpimg.imread(image_buf, format='JPG')
     return img_ndarray
 
+
 def resize_image(nd):
     resized_nd = resize(nd, (250, 250)) * 255
     resized_nd = resized_nd.astype(np.uint8)
