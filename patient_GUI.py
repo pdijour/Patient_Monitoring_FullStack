@@ -5,8 +5,12 @@ from tkinter import ttk, filedialog, messagebox, Scrollbar
 from PIL import Image, ImageTk
 from ecg_analysis import overall_plotting, overall_rate
 from datetime import datetime
-from cloud_client import add_files_to_server, send_image_to_server
 import os
+import requests
+import base64
+
+
+server = "http://127.0.0.1:5000"
 
 
 def load_and_resize_image(filename):
@@ -26,28 +30,51 @@ def change_file(starting, type):
     return filename
 
 
+def add_files_to_server(patient_name, id_no, medical_files,
+                        medical_files_b64, ecg_files, ecg_files_b64,
+                        bpms, timestamps):
+    """ Makes request to server to add specified patient information
+    """
+    id_no = id_no
+    patient1 = {"patient_name": patient_name,
+                "record_number": id_no,
+                "medical_image_files": medical_files,
+                "medical_images_b64": medical_files_b64,
+                "ECG_image_files": ecg_files,
+                "ECG_images_b64": ecg_files_b64,
+                "heartrates": bpms,
+                "datetimes": timestamps}
+    r = requests.post(server + "/api/add_files", json=patient1)
+    print(r.status_code)
+    print(r.text)
+    return r.text
+
+
+def convert_image_file_to_b64_string(filename):
+    with open(filename, "rb") as image_file:
+        b64_bytes = base64.b64encode(image_file.read())
+    b64_string = str(b64_bytes, encoding='utf-8')
+    return b64_string
+
+
 def design_window():
 
     def upload_button_cmd():
         name = name_data.get()
         record_number = record_data.get()
         medical_filename = os.path.basename(medical_file_label.name)
+        medical_b64 = convert_image_file_to_b64_string(medical_file_label.name)
         ecg_filename = os.path.basename(ecg_file_label.name)
+        ecg_b64 = convert_image_file_to_b64_string(ecg_file_label.name)
         heart_rate = bpm_label.hr
         time = datetime.now()
         timestamp = datetime.strftime(time, "%Y-%m-%d %H:%M:%S")
-        print(name)
-        print(record_number)
-        print(heart_rate)
-        print(timestamp)
-        if ecg_file_label.name != "":
-            send_image_to_server(ecg_file_label.name)
-        if medical_file_label.name != "":
-            send_image_to_server(medical_file_label.name)
         answer = add_files_to_server(name,
                                      record_number,
                                      medical_filename,
+                                     medical_b64,
                                      ecg_filename,
+                                     ecg_b64,
                                      heart_rate,
                                      timestamp)
         output_string.configure(text=answer)
