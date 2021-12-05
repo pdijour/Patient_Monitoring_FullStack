@@ -15,10 +15,6 @@ server = "http://127.0.0.1:5000"
 
 def load_and_resize_image(filename):
     pil_image = Image.open(filename)
-    # original_size = pil_image.size
-    # adj_factor = 0.5
-    # new_width = round(original_size[0] * adj_factor)
-    # new_height = round(original_size[1] * adj_factor)
     resized_image = pil_image.resize((250, 250))
     tk_image = ImageTk.PhotoImage(resized_image)
     return tk_image, filename
@@ -49,7 +45,7 @@ def add_files_to_server(patient_name, id_no, medical_files,
     return r.text
 
 
-def convert_image_file_to_b64_string(filename):
+def convert_file_to_b64_string(filename):
     try:
         with open(filename, "rb") as image_file:
             b64_bytes = base64.b64encode(image_file.read())
@@ -66,13 +62,13 @@ def design_window():
         record_number = record_data.get()
         try:
             medical_filename = os.path.basename(medical_file_label.name)
-            medical_b64 = convert_image_file_to_b64_string(medical_file_label.name)
+            medical_b64 = convert_file_to_b64_string(medical_file_label.name)
         except AttributeError:
             medical_filename = ""
             medical_b64 = ""
         try:
             ecg_filename = os.path.basename(ecg_file_label.name)
-            ecg_b64 = convert_image_file_to_b64_string(ecg_file_label.name)
+            ecg_b64 = convert_file_to_b64_string(ecg_file_label.name)
             heart_rate = bpm_label.hr
         except AttributeError:
             ecg_filename = ""
@@ -205,7 +201,7 @@ def design_window():
     upload_button.grid(column=0, row=7, columnspan=5, pady=[40, 0])
 
     output_string = ttk.Label(root, wraplength=500)
-    output_string.grid(column=3, row=8)
+    output_string.grid(column=0, row=8, columnspan=5)
 
     cancel_button = ttk.Button(root, text="Cancel",
                                command=cancel_cmd)
