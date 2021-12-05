@@ -4,7 +4,8 @@ from PIL import Image, ImageTk
 import requests
 import json
 from cloud_server import b64_to_ndarray, get_index, resize_image, b64_string_to_file
-
+import base64
+import os
 
 server = "http://127.0.0.1:5000"
 
@@ -87,11 +88,37 @@ def design_window():
 
     def save_latest_ecg():
         patient_info = update_patient_info()
-        filename = filedialog.asksaveasfile(mode='w', defaultextension=".jpg")
+        filename = filedialog.asksaveasfile(defaultextension=".jpg",
+                                            initialfile="Latest_ECG.jpg",
+                                            mode='wb')
         if not filename:
             return
         latest_ecg_b64 = patient_info["ecg_images_b64"][-1]
         b64_string_to_file(latest_ecg_b64, filename)
+
+    def save_ecg():
+        patient_info = update_patient_info()
+        filename = filedialog.asksaveasfile(defaultextension=".jpg",
+                                            initialfile="ECG.jpg",
+                                            mode='wb')
+        if not filename:
+            return
+        selected_image = variable3.get()
+        index = get_index(patient_info["ecg_images"], selected_image)
+        ecg_b64 = patient_info["ecg_images_b64"][index]
+        b64_string_to_file(ecg_b64, filename)
+
+    def save_medical_image():
+        patient_info = update_patient_info()
+        filename = filedialog.asksaveasfile(defaultextension=".jpg",
+                                            initialfile="Medical_Image.jpg",
+                                            mode='wb')
+        if not filename:
+            return
+        selected_image = variable2.get()
+        index = get_index(patient_info["medical_images"], selected_image)
+        medical_b64 = patient_info["medical_images_b64"][index]
+        b64_string_to_file(medical_b64, filename)
 
     root = tk.Tk()
     root.configure(background="#ececec")
@@ -195,11 +222,11 @@ def design_window():
     save_last_ecg_button.grid(column=0, row=8, columnspan=2)
 
     save_selected_ecg_button = ttk.Button(root, text="Save",
-                                          command=save_button_cmd)
+                                          command=save_ecg)
     save_selected_ecg_button.grid(column=3, row=8, columnspan=2)
 
     save_medical_image_button = ttk.Button(root, text="Save",
-                                           command=save_button_cmd)
+                                           command=save_medical_image)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
     root.mainloop()

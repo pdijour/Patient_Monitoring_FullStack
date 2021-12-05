@@ -265,9 +265,9 @@ def read_file_as_b64(image_path):
     return b64_string
 
 
-def b64_string_to_file(b64_string, filename):
+def b64_string_to_file(b64_string, filewrapper):
     image_bytes = base64.b64decode(b64_string)
-    with open(filename, "wb") as out_file:
+    with filewrapper as out_file:
         out_file.write(image_bytes)
     return None
 

@@ -5,6 +5,8 @@ from datetime import datetime
 from testfixtures import LogCapture
 from cloud_server import initialize_server, add_database_entry
 from database_definitions import Patient
+import io
+import os
 
 initialize_server()
 
