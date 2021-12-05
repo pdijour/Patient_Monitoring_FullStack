@@ -207,6 +207,18 @@ def test_add_patient_file(entry, patient_name, id_no, medical_file,
             answer.heart_rates, answer.datetimes) == expected
 
 
+def test_add_files_to_server():
+    from patient_GUI import add_files_to_server
+    expected1 = "Added patient 33"
+    expected2 = "Added file for patient 33"
+    answer1 = add_files_to_server("New Person", 33, "1.png", "abc123", "2.png",
+                                  "def456", 86, "2020-03-09 11:00:36")
+    answer2 = add_files_to_server("New Person", 33, "3.png", "abc123", "4.png",
+                                  "def456", 90, "2021-04-10 04:12:23")
+    assert answer1 == expected1
+    assert answer2 == expected2
+
+
 def test_patient_name_change():
     from cloud_server import add_database_entry
     from cloud_server import add_patient_file
@@ -236,7 +248,7 @@ def test_list_record_numbers():
     entry.delete()
     entry_2.delete()
     entry_3.delete()
-    expected = [3, 5, 11]
+    expected = [33, 3, 5, 11]
     assert answer == expected
 
 

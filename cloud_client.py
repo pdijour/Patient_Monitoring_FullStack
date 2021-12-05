@@ -6,20 +6,6 @@ from patient_GUI import add_files_to_server
 server = "http://127.0.0.1:5000"
 
 
-def send_b64_string_to_server(b64_string, filename):
-    out_json = {"image": b64_string,
-                "filename": filename}
-    r = requests.post(server + "/api/add_image",
-                      json=out_json)
-    if r.status_code != 200:
-        print(r.text)
-        return False
-    else:
-        print(r.status_code)
-        print(r.text)
-        return r.text
-
-
 def main():
     # Check if server running
     r = requests.get(server + "/")

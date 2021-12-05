@@ -35,7 +35,6 @@ def add_files_to_server(patient_name, id_no, medical_files,
                         bpms, timestamps):
     """ Makes request to server to add specified patient information
     """
-    id_no = id_no
     patient1 = {"patient_name": patient_name,
                 "record_number": id_no,
                 "medical_image_files": medical_files,
@@ -78,6 +77,11 @@ def design_window():
                                      heart_rate,
                                      timestamp)
         output_string.configure(text=answer)
+        medical_file_label.config(text='')
+        ecg_file_label.config(text='')
+        medical_image_label.config(image='')
+        ecg_image_label.config(image='')
+        bpm_label.config(text='')
 
     def cancel_cmd():
         root.destroy()
