@@ -3,7 +3,8 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 import json
-from cloud_server import b64_to_ndarray, get_index, resize_image, b64_string_to_file
+from cloud_server import b64_to_ndarray, get_index, \
+    resize_image, b64_string_to_file
 import base64
 import os
 
