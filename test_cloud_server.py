@@ -198,8 +198,8 @@ def test_add_patient_file(entry, patient_name, id_no, medical_file,
                           medical_b64, ecg_file, ecg_b64, bpm,
                           timestamp, expected):
     from cloud_server import add_patient_file
-    answer = add_patient_file(patient_name, id_no, medical_file, medical_b64,
-                              ecg_file, ecg_b64, bpm, timestamp)
+    answer = add_patient_file(str(patient_name), id_no, medical_file,
+                              medical_b64, ecg_file, ecg_b64, bpm, timestamp)
     entry.delete()
     assert (answer.name, answer.medical_record_number,
             answer.medical_images, answer.medical_images_b64,
