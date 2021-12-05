@@ -19,9 +19,39 @@ def design_window():
     def cancel_cmd():
         root.destroy()
 
-    # def refresh():
-    #     update_info()
-    #     root.after(10000, refresh)
+    def refresh():
+        patient_info = update_patient_info()
+
+        namelabel.set(patient_info["name"])
+        idlabel.set(patient_info["medical_record_number"])
+        hrlabel.set(patient_info["heart_rates"][-1])
+        dtlabel.set(patient_info["datetimes"][-1])
+
+        variable2.set(patient_info["medical_images"][0])
+        variable3.set(patient_info["datetimes"][0])
+        image_selector['values'] = patient_info["medical_images"]
+        ecg_selector['values'] = patient_info["datetimes"]
+
+        new_medical_b64 = patient_info["medical_images_b64"][0]
+        new_medical_nd = b64_to_ndarray(new_medical_b64)
+        resized_medical_nd = resize_image(new_medical_nd)
+        tk_medical_image = display_ndarray(resized_medical_nd)
+        medical_image_label.configure(image=tk_medical_image)
+        medical_image_label.image = tk_medical_image
+
+        new_ecg_b64 = patient_info["ecg_images_b64"][0]
+        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
+        resized_ecg_nd = resize_image(new_ecg_nd)
+        tk_ecg_image = display_ndarray(resized_ecg_nd)
+        ecg_image_label.configure(image=tk_ecg_image)
+        ecg_image_label.image = tk_ecg_image
+
+        latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
+        resized_ecg_nd = resize_image(latest_ecg_nd)
+        tk_latest_ecg = display_ndarray(resized_ecg_nd)
+        latest_ecg_image_label.configure(image=tk_latest_ecg)
+        latest_ecg_image_label.image = tk_latest_ecg
+        root.after(10000, refresh)
 
     def update_patient_info():
         patient_id = int(variable.get())
@@ -233,7 +263,7 @@ def design_window():
                                            command=save_medical_image)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
-   # refresh()
+    refresh()
 
     root.mainloop()
 
