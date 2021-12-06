@@ -41,20 +41,21 @@ def load_and_resize_image(filename):
 def change_file(starting, type):
     """Opens a file dialog box for the user to select an image
 
-       This function uses the filedialog command .askopenfilename to open a file
-       dialog box and allow the user to select an image. It opens in a specific
-       directory and only allows users to select certain types of files.
+       This function uses the filedialog command .askopenfilename to open a
+       file dialog box and allow the user to select an image. It opens in a
+       specific directory and only allows users to select certain types of
+       files.
 
        Parameters
         ----------
-        starting: Str
+        starting : Str
             Contains the name of the default starting file directory
-        type: Str
+        type : Str
             Contains the type of file that the user can select
 
        Returns
        -------
-        filename
+        String
             Containing the name that the user selected
        """
     filename = filedialog.askopenfilename(initialdir="{}".format(starting),
@@ -78,7 +79,7 @@ def design_window():
         information is sent to the server and a return message is displayed
         below the button. Finally, the GUI includes a "Cancel" button that
         closes the GUI window.
-      """
+    """
     def upload_button_cmd():
         """Event to run when Upload button is pressed
 
@@ -86,13 +87,13 @@ def design_window():
            data from the name and ID entry boxes. It implements two try except
            blocks to bet the ECG and Medical image filenames and b64 strings,
            which it acquires through an external function that converts image
-           file to b64 strings. If the filename does not exist, it assigns empty
-           lists to the variable. It uses the datetime function to get the
-           date and time at which the button is pressed and then uses an
+           file to b64 strings. If the filename does not exist, it assigns
+           empty lists to the variable. It uses the datetime function to get
+           the date and time at which the button is pressed and then uses an
            external function in the server to add the files to the server. It
            then prints the response from the post request to the server in the
            GUI.
-       """
+        """
         name = name_data.get()
         record_number = record_data.get()
         try:
@@ -128,7 +129,7 @@ def design_window():
            GUI. It sets the labels fo the ECG filename and image to empty
            empty strings, effectively erasing the filename and image from the
            GUI.
-          """        
+        """
         ecg_file_label.name = ''
         ecg_file_label.config(text='')
         ecg_image_label.config(image='')
@@ -137,11 +138,11 @@ def design_window():
     def clear_medical_cmd():
         """Clears medical filename and image from GUI
 
-           This function is connected to the "Clear Medical Image" button of the
-           GUI. It sets the labels fo the ECG filename and image to empty
+           This function is connected to the "Clear Medical Image" button of
+           the GUI. It sets the labels fo the ECG filename and image to empty
            empty strings, effectively erasing the filename and image from the
            GUI.
-          """   
+        """
         medical_file_label.name = ''
         medical_file_label.config(text='')
         medical_image_label.config(image='')
@@ -151,7 +152,7 @@ def design_window():
 
            This function is connected to the "Cancel" button of the GUI.  It
            destroys the root window causing the GUI interface to close.
-          """
+        """
         root.destroy()
 
     def change_ecg_picture_cmd():
@@ -162,10 +163,10 @@ def design_window():
            plotted and saved as a .png file. The file is then set sent to an
            external function for opening and resizing. The returned image is
            then added to the ecg_image_label widget for display on the GUI. The
-           filename is added to the ecg_file_label widget for display. The heart
-           rate is also calculated and added to the bpm_label widget for
+           filename is added to the ecg_file_label widget for display. The
+           heart rate is also calculated and added to the bpm_label widget for
            display.
-          """
+        """
         filename = change_file("test_data", [("CSV Files", ".csv")])
         filename_png = "{}.png".format(filename.strip(".csv"))
         if filename == "":
@@ -186,13 +187,13 @@ def design_window():
     def change_medical_picture_cmd():
         """Allows user to select a new medical image to display
 
-           This function opens a dialog box to allow the user to choose an image
-           file. If the user does not cancel the dialog box, the chosen filename
-           is sent to an external function for opening and resizing. The
-           returned image is then added to the medical_image_label widget for
-           display on the GUI. The filename is added to the medical_file_label
-           for display.
-          """
+           This function opens a dialog box to allow the user to choose an
+           image file. If the user does not cancel the dialog box, the chosen
+           filename is sent to an external function for opening and resizing.
+           The returned image is then added to the medical_image_label widget
+           for display on the GUI. The filename is added to the
+           medical_file_label for display.
+        """
         filename = change_file("images",
                                [("Picture files", ".png .jpg .jpeg")])
         if filename == "":

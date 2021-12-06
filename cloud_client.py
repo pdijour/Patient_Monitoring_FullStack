@@ -13,26 +13,27 @@ def add_files_to_server(patient_name, id_no, medical_files,
     """Makes post request to server to add patient information
 
        This function takes patient information as parameter inputs and makes
-       a post request to the database server to store the information. It prints
-       the server response to the console as well as returns it to the caller.
+       a post request to the database server to store the information. It
+       prints the server response to the console as well as returns it to the
+       caller.
 
        Parameters
         ----------
-        patient_name: Str
+        patient_name : Str
             Contains the patient's name
-        id_no: int
+        id_no : int
             Contains the patient's medical record / ID number
-        medical_files: Str
+        medical_files : Str
             Contains the file name of the medical image
-        medical_files_b64: Str
+        medical_files_b64 : Str
             Contains the b64 string of the medical image
-        ecg_files: Str
+        ecg_files : Str
             Contains the file name of the ecg image
-        ecg_files_b64: Str
+        ecg_files_b64 : Str
             Contains the b64 string of the ecg image
-        bpms: int
+        bpms : int
             Contains the heart rate for the chosen ecg file
-        timestamps: Str
+        timestamps : Str
             Contains the date and time that the heart rate was determined
 
        Returns
@@ -59,17 +60,17 @@ def convert_file_to_b64_string(filename):
 
        This function opens the chosen filename and uses the base64.b64encode
        method to convert the file to a b64 string. If a filename that does not
-       exist is entered, the function implement an exception within a try except
-       block to return "no file." Otherwise, it returns the b64 string.
+       exist is entered, the function implement an exception within a try
+       except block to return "no file." Otherwise, it returns the b64 string.
 
        Parameters
         ----------
-        filename: Str
+        filename : Str
             Contains the name of the image file
 
        Returns
        -------
-        b_64 string
+        String
             Containing the b64 string for the specified image file
        """
     try:
