@@ -3,6 +3,10 @@
 import requests
 import requests
 import base64
+import io
+import matplotlib.image as mpimg
+from skimage.transform import resize
+import numpy as np
 
 server = "http://127.0.0.1:5000"
 
@@ -80,6 +84,127 @@ def convert_file_to_b64_string(filename):
     except FileNotFoundError:
         return "no file"
     return b64_string
+
+
+def b64_to_ndarray(b64):
+    """Converts a b64 string into an ndarray
+
+       This function takes in the b64 string representing an
+       image file. Then it is converted to an ndarray using
+       functions from the base64 and io modules. This ndarray
+       representation of the iamge is then returned for
+       resizing or displaying purposes.
+
+       Parameters
+        ----------
+        b64 : Str
+            Contains the image in b64 string format
+
+       Returns
+       -------
+       array
+           Containing the converted image as a ndarray
+       """
+    image_bytes = base64.b64decode(b64)
+    image_buf = io.BytesIO(image_bytes)
+    img_ndarray = mpimg.imread(image_buf, format='JPG')
+    return img_ndarray
+
+
+def get_index(listvar, val):
+    """Gets the index of a specified value in a given list
+
+       This function takes in a value and a list and simply
+       searches the list using the index function for the
+       specified value.
+
+       Parameters
+        ----------
+        listvar : list
+            A list containing any type of values to be searched
+        val : Any type
+            A specific value of any type that will be searched
+            for in the list passed in
+
+       Returns
+       -------
+       int
+           Containing the index of the value in the list
+       """
+    index = listvar.index(val)
+    return index
+
+
+def resize_image(nd):
+    """resizes an image in ndarray form to 250x250
+
+       This function takes in an ndarray representing an image
+       and resizes it to be 250x250. This way, all images are uniform
+       in size, so the GUI does not constantly change shape or become
+       too large. The resized ndarray is then returned
+
+       Parameters
+        ----------
+        nd : array
+            An ndarray representing an image
+
+       Returns
+       -------
+       array
+           Containing the ndarray representing the resized image
+       """
+    resized_nd = resize(nd, (250, 250)) * 255
+    resized_nd = resized_nd.astype(np.uint8)
+    return resized_nd
+
+
+def b64_string_to_file(b64_string, filewrapper):
+    """Converts a b64 string to an an image file
+
+       This function takes in the b64 string representing
+       an image, decodes it using the b64decode function from
+       the base64 module to convert it into byte format. Then
+       a file specified by the user is opened and the bytes
+       are written in that file to produce an image file.
+       Nothing is returned but the image file will appear locally.
+
+       Parameters
+        ----------
+        b64_string : Str
+            Contains the image in b64 string format
+        filewrapper: io.TextIOWrapper object
+            Contains information about the name and location for
+            the saved image file. This object is returned by the
+            asksaveasfilename function, part of filedialogue in
+            Tkinter
+       """
+    image_bytes = base64.b64decode(b64_string)
+    with filewrapper as out_file:
+        out_file.write(image_bytes)
+    return None
+
+
+def process_b64(b64):
+    """Converts a b64 string into a resized ndarray for display
+
+       This function takes in a b64 strings representing an image,
+       converts it to an ndarray using the b64_to_ndarray function,
+       then resized it to 250x250 using the resize_image function.
+       This resized ndarray is then returned to be displayed.
+
+       Parameters
+        ----------
+        b64 : str
+            A b64 string representing an image
+
+       Returns
+       -------
+       array
+           Containing the ndarray representing the resized image
+       """
+    nd = b64_to_ndarray(b64)
+    resized_medical_nd = resize_image(nd)
+    return resized_medical_nd
 
 
 def main():
