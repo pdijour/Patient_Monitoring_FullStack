@@ -66,7 +66,7 @@ def change_file(starting, type):
 def design_window():
     """Creates the patient-side GUI window for the database
 
-        A GUI window is created that is the main interface for the database. It
+        A GUI window is created that is the database's patient interface. It
         accepts information from the user (patient name, medical record number,
         and medical and ecg image filenames (from dialog boxes). The GUI
         includes "Select Image" buttons for the medical and ECG images. Upon

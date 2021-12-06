@@ -156,7 +156,7 @@ def validate_input(in_data, expected_input):
            Containing 'TRUE' value if valid input
        Int
            Status code corresponding to valid (200) or
-           invalid input (400 or 401)
+           invalid input (400)
        """
     if type(in_data) is not dict:
         return "The input was not a dictionary.", 400
