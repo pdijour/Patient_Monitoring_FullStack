@@ -27,8 +27,8 @@ def initialize_server():
                         filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
-            "myFirstDatabase?retryWrites=true&w=majority")
+    connect("mongodb+srv://pdijour:mongopassword@bme547.qubox.mongodb.net/"
+            "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
