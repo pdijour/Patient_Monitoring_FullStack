@@ -350,3 +350,19 @@ def test_resize_image():
                 [68, 115, 197],
                 [68, 115, 197]]
     assert (answer == expected).all
+
+
+def test_process_b64():
+    from cloud_server import read_file_as_b64
+    from cloud_server import b64_to_ndarray
+    from cloud_server import resize_image
+    b64str = read_file_as_b64("test_image.jpg")
+    nd = b64_to_ndarray(b64str)
+    resized_nd = resize_image(nd)
+    answer = resized_nd[0][0:5]
+    expected = [[68, 115, 197],
+                [68, 115, 197],
+                [68, 115, 197],
+                [68, 115, 197],
+                [68, 115, 197]]
+    assert (answer == expected).all

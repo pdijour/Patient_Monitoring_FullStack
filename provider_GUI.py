@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import requests
 import json
 from cloud_server import b64_to_ndarray, get_index, \
-    resize_image, b64_string_to_file
+    resize_image, b64_string_to_file, process_b64
 
 server = "http://127.0.0.1:5000"
 
@@ -24,8 +24,8 @@ def design_window():
         """
         Function called every 10 seconds to refresh
         the GUI with updated information from the Mongo
-        database. Refreshes all comboboxes, image choices,
-        and latest ECG and heartrate as well.
+        database. Refreshes all comboboxes, info,
+        and latest ECG datetime, trace, and heart rate as well.
         """
         r = requests.get(server + "/api/record_numbers")
         medical_record_options = json.loads(r.text)
@@ -37,30 +37,11 @@ def design_window():
         hrlabel.set(patient_info["heart_rates"][-1])
         dtlabel.set(patient_info["datetimes"][-1])
 
-        variable2.set(patient_info["medical_images"][0])
-        variable3.set(patient_info["datetimes"][0])
         image_selector['values'] = patient_info["medical_images"]
         ecg_selector['values'] = patient_info["datetimes"]
 
-        new_medical_b64 = patient_info["medical_images_b64"][0]
-        new_medical_nd = b64_to_ndarray(new_medical_b64)
-        resized_medical_nd = resize_image(new_medical_nd)
-        tk_medical_image = ImageTk.\
-            PhotoImage(image=Image.fromarray(resized_medical_nd))
-        medical_image_label.configure(image=tk_medical_image)
-        medical_image_label.image = tk_medical_image
-
-        new_ecg_b64 = patient_info["ecg_images_b64"][0]
-        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
-        resized_ecg_nd = resize_image(new_ecg_nd)
-        tk_ecg_image = ImageTk.\
-            PhotoImage(image=Image.fromarray(resized_ecg_nd))
-        ecg_image_label.configure(image=tk_ecg_image)
-        ecg_image_label.image = tk_ecg_image
-
-        latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
-        resized_ecg_nd = resize_image(latest_ecg_nd)
-        tk_latest_ecg = ImageTk.\
+        resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][-1])
+        tk_latest_ecg = ImageTk. \
             PhotoImage(image=Image.fromarray(resized_ecg_nd))
         latest_ecg_image_label.configure(image=tk_latest_ecg)
         latest_ecg_image_label.image = tk_latest_ecg
@@ -84,11 +65,13 @@ def design_window():
 
     def update_info(event):
         """
-        This function does essentially the same thing as the refresh
+        This function does essentially the same thing as the update
         function but has the event parameter because it is bound to
-        the combobox for the medical record number selection. This
-        way, whenever a different selection is made, the relevant
-        information about that patient is updated on the GUI.
+        the combobox for the medical record number selection.
+        Additionally, it changes the displayed medical image, and
+        ecg image to match the selected patient. This way, whenever
+        a different selection is made, the relevant information about
+        that patient is updated on the GUI.
 
         Parameters
         ----------
@@ -96,7 +79,34 @@ def design_window():
             Needed to trigger when bound combobox selection changes
         """
         patient_info = update_patient_info()
-        refresh()
+
+        namelabel.set(patient_info["name"])
+        idlabel.set(patient_info["medical_record_number"])
+        hrlabel.set(patient_info["heart_rates"][-1])
+        dtlabel.set(patient_info["datetimes"][-1])
+
+        variable2.set(patient_info["medical_images"][0])
+        variable3.set(patient_info["datetimes"][0])
+        image_selector['values'] = patient_info["medical_images"]
+        ecg_selector['values'] = patient_info["datetimes"]
+
+        resized_medical_nd = process_b64(patient_info["medical_images_b64"][0])
+        tk_medical_image = ImageTk. \
+            PhotoImage(image=Image.fromarray(resized_medical_nd))
+        medical_image_label.configure(image=tk_medical_image)
+        medical_image_label.image = tk_medical_image
+
+        resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][0])
+        tk_ecg_image = ImageTk. \
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
+        ecg_image_label.configure(image=tk_ecg_image)
+        ecg_image_label.image = tk_ecg_image
+
+        resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][-1])
+        tk_latest_ecg = ImageTk. \
+            PhotoImage(image=Image.fromarray(resized_ecg_nd))
+        latest_ecg_image_label.configure(image=tk_latest_ecg)
+        latest_ecg_image_label.image = tk_latest_ecg
 
     def update_medical_image(event):
         """
@@ -118,9 +128,8 @@ def design_window():
 
         selected_image = variable2.get()
         index = get_index(patient_info["medical_images"], selected_image)
-        new_medical_b64 = patient_info["medical_images_b64"][index]
-        new_medical_nd = b64_to_ndarray(new_medical_b64)
-        resized_medical_nd = resize_image(new_medical_nd)
+        resized_medical_nd = process_b64(patient_info["medical_images_b64"]
+                                         [index])
         tk_medical_image = ImageTk.\
             PhotoImage(image=Image.fromarray(resized_medical_nd))
         medical_image_label.configure(image=tk_medical_image)
@@ -146,9 +155,7 @@ def design_window():
 
         selected_image = variable3.get()
         index = get_index(patient_info["datetimes"], selected_image)
-        new_ecg_b64 = patient_info["ecg_images_b64"][index]
-        new_ecg_nd = b64_to_ndarray(new_ecg_b64)
-        resized_ecg_nd = resize_image(new_ecg_nd)
+        resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][index])
         tk_ecg_image = ImageTk.\
             PhotoImage(image=Image.fromarray(resized_ecg_nd))
         ecg_image_label.configure(image=tk_ecg_image)
@@ -216,12 +223,11 @@ def design_window():
     root.configure(background="#ececec")
     root.title("Monitoring Station GUI")
 
+    # Select from available medical record numbers in database
     ttk.Label(root, text="Select Patient Medical Record Number")\
         .grid(column=0, row=0, sticky='w', padx=20, pady=20)
-
     r = requests.get(server + "/api/record_numbers")
     medical_record_options = json.loads(r.text)
-
     variable = tk.StringVar(root)
     variable.set(medical_record_options[0])
     record_selector = ttk.Combobox(root, textvariable=variable)
@@ -229,45 +235,49 @@ def design_window():
     record_selector['state'] = 'readonly'
     record_selector.grid(column=1, row=0, sticky='w', padx=20, pady=20)
 
+    # Update displayed information if selection changes
     record_selector.bind('<<ComboboxSelected>>', update_info)
 
+    # Updates patient_info dictionary to contain all relevant info
     patient_info = update_patient_info()
 
+    # Display the name of the patient selected
     ttk.Label(root, text="Patient Name") \
         .grid(column=0, row=2, sticky='w', padx=20, pady=20)
-
     namelabel = tk.StringVar()
     namelabel.set(patient_info["name"])
     ttk.Label(textvariable=namelabel)\
         .grid(column=1, row=2, sticky='w', padx=20, pady=20)
 
+    # Display the medical record number of the patient
     ttk.Label(root, text="Medical Record Number")\
         .grid(column=0, row=3, sticky='w', padx=20, pady=20)
-
     idlabel = tk.StringVar()
     idlabel.set(patient_info["medical_record_number"])
     ttk.Label(textvariable=idlabel)\
         .grid(column=1, row=3, sticky='w', padx=20, pady=20)
 
+    # Display the latest heart rate for the patient
     ttk.Label(root, text="Latest Heart Rate")\
         .grid(column=0, row=4, sticky='w', padx=20, pady=20)
-
     hrlabel = tk.StringVar()
     hrlabel.set(patient_info["heart_rates"][-1])
     ttk.Label(textvariable=hrlabel)\
         .grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
+    # Display the datetime for the latest ECG trace for the patient
     ttk.Label(root, text="Latest ECG Trace")\
         .grid(column=0, row=6, sticky='w', padx=20, pady=20)
-
     dtlabel = tk.StringVar()
     dtlabel.set(patient_info["datetimes"][-1])
     ttk.Label(textvariable=dtlabel)\
         .grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
+    # Button to close the GUI
     cancel_button = ttk.Button(root, text="Cancel", command=cancel_cmd)
     cancel_button.grid(column=6, row=12)
 
+    # Combobox for medical image selection
     ttk.Label(root, text="Display Medical Image")\
         .grid(column=3, row=0, sticky='w', padx=20, pady=20)
     medical_image_options = patient_info["medical_images"]
@@ -279,6 +289,7 @@ def design_window():
     image_selector.grid(column=4, row=0, sticky='w', padx=20, pady=20)
     image_selector.bind('<<ComboboxSelected>>', update_medical_image)
 
+    # Combobox for ecg selection
     ttk.Label(root, text="Display Historical ECG") \
         .grid(column=3, row=6, sticky='w', padx=20, pady=20)
     ecg_image_options = patient_info["datetimes"]
@@ -290,42 +301,43 @@ def design_window():
     ecg_selector.grid(column=4, row=6, sticky='w', padx=20, pady=20)
     ecg_selector.bind('<<ComboboxSelected>>', update_ecg_image)
 
-    medical_nd = b64_to_ndarray(patient_info["medical_images_b64"][0])
-    resized_medical_nd = resize_image(medical_nd)
+    # Display the selected medical image
+    resized_medical_nd = process_b64(patient_info["medical_images_b64"][0])
     tk_medical_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_medical_nd))
     medical_image_label = ttk.Label(root, image=tk_medical_image)
     medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
-    latest_ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][-1])
-    resized_ecg_nd = resize_image(latest_ecg_nd)
+    # Display the latest ECG trace for the patient
+    resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][-1])
     tk_latest_ecg = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
     latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
-    ecg_nd = b64_to_ndarray(patient_info["ecg_images_b64"][0])
-    resized_ecg_nd = resize_image(ecg_nd)
+    # Display the selected ECG trace from the combobox
+    resized_ecg_nd = process_b64(patient_info["ecg_images_b64"][0])
     tk_ecg_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
     ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)
 
+    # Save buttons to allow users to save any image they like locally
     save_last_ecg_button = ttk.Button(root, text="Save",
                                       command=save_latest_ecg)
     save_last_ecg_button.grid(column=0, row=8, columnspan=2)
-
     save_selected_ecg_button = ttk.Button(root, text="Save",
                                           command=save_ecg)
     save_selected_ecg_button.grid(column=3, row=8, columnspan=2)
-
     save_medical_image_button = ttk.Button(root, text="Save",
                                            command=save_medical_image)
     save_medical_image_button.grid(column=3, row=5, columnspan=2)
 
+    # Function to retrieve latest information from the database every
+    # 10 seconds and display it in the GUI
     refresh()
 
     root.mainloop()
