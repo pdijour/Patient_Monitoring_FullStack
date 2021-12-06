@@ -8,7 +8,6 @@ A detailed README describing the final performance and state of your project. Th
 
 The purpose of this project is to design a Patient Monitoring System that has a patient-side GUI, a monitoring-station GUI, and a server/database that allows patient data to be uploaded and stored on the server and retrieved for ad-hoc and continuous monitoring. This can be used in a medical setting, where patients and medical professionals can enter medical images and ECG files into a patient-side GUI. This GUI interacts with a server and a database to store patient information. Then, a patient or medical professional can use the monitoring-station GUI to see each patient's medical files, including any timestamped heart rates that were calculated based on the ECG files. Read on for more information about the project.
 
-
 ## Basic instruction manual
 ### Setting up
 1. The cloud server script will be running on a virtual machine which can be accessed using the following url: `vcm-23074.vm.duke.edu`
