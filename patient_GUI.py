@@ -9,7 +9,7 @@ import os
 from cloud_client import add_files_to_server, convert_file_to_b64_string
 
 
-server = "vcm-23074.vm.duke.edu"
+server = "http://152.3.65.89:5002"
 
 
 def load_and_resize_image(filename):

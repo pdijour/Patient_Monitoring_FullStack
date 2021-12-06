@@ -8,7 +8,7 @@ import matplotlib.image as mpimg
 from skimage.transform import resize
 import numpy as np
 
-server = "http://127.0.0.1:5000"
+server = "http://152.3.65.89:5002"
 
 
 def add_files_to_server(patient_name, id_no, medical_files,

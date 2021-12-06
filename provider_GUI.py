@@ -6,7 +6,7 @@ import json
 from cloud_client import b64_to_ndarray, get_index, \
     resize_image, b64_string_to_file, process_b64
 
-server = "http://127.0.0.1:5000"
+server = "http://152.3.65.89:5002"
 
 
 def design_window():
