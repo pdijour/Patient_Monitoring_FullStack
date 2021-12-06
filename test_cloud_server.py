@@ -113,6 +113,26 @@ def test_validate_input(in_data, expected_input, expected_val, expected_code):
     assert result == (expected_val, expected_code)
 
 
+@pytest.mark.parametrize("in_data, expected",
+                         [({"patient_name": "Yume Choi",
+                            "record_number": 5,
+                            "medical_image_files": "y1.png",
+                            "medical_images_b64": "abc123",
+                            "ECG_image_files": "y2.png",
+                            "ECG_images_b64": "def456",
+                            "heartrates": 90,
+                            "datetimes": "2021-10-06 11:11:40"},
+                          "Updated patient 5")])
+def test_new_or_old(in_data, expected):
+    from cloud_server import new_or_old
+    from cloud_server import add_database_entry
+    patient = add_database_entry("Yume Choi", 5, "1.png", "abc123", "2.png",
+                                 "def456", 86, "2020-03-09 11:00:36")
+    answer = new_or_old(in_data)
+    patient.delete()
+    assert answer == expected
+
+
 def test_add_database_entry():
     from cloud_server import add_database_entry
     expected_name = "Yume Choi"
@@ -156,7 +176,7 @@ def test_add_patient_file_is_made():
                          "def456", 90, "2021-04-10 12:11:59")
         entry_to_delete.delete()
     log_c.check(("root", "INFO", "Added new patient into database with id: 5"),
-                ("root", "INFO", "Added new file for patient with id: 5"))
+                ("root", "INFO", "Updated patient with id: 5"))
 
 
 entry_to_delete1 = add_database_entry("Max Silver", 9, "1.png", "m1", "2.png",
@@ -222,7 +242,7 @@ def test_patient_name_change():
     log_c.check(('root', 'INFO', 'Added new patient into database with id: 3'),
                 ('root', 'WARNING', 'Entered patient name does not match '
                  'records for 3. Patient name will now be set to Youme Choi'),
-                ('root', 'INFO', 'Added new file for patient with id: 3'))
+                ('root', 'INFO', 'Updated patient with id: 3'))
 
 
 def test_list_record_numbers():
