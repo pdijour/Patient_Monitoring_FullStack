@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 import logging
 from pymodm import connect
 from database_definitions import Patient
+from cloud_client import convert_file_to_b64_string
 import base64
 import io
 import matplotlib.image as mpimg
@@ -26,8 +27,8 @@ def initialize_server():
                         filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
-            "final_project?retryWrites=true&w=majority")
+    connect("mongodb+srv://mqt3:71IhMxzWnTpAhRkg@bme547.qubox.mongodb.net/"
+            "myFirstDatabase?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
 
@@ -467,4 +468,14 @@ def retrieve_all_info(id_no):
 
 if __name__ == '__main__':
     initialize_server()
+
+    # full_pathname_1 = '/images/acl1.jpg'
+    # full_pathname_2 = '/images/jd_ecg.jpg'
+    # b64_medical_test = convert_file_to_b64_string(full_pathname_1)
+    # b64_ecg_test = convert_file_to_b64_string(full_pathname_2)
+    # datetime = "2020-03-02 11:00:36"
+    # patient1 = Patient("John Doe (Sample)", 0, ["test_image.jpg"],
+    #                    [b64_medical_test], ["jd_ecg.jpg"],
+    #                    [b64_ecg_test], [85], [datetime])
+    # patient1.save()
     app.run()
