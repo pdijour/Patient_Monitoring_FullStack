@@ -41,11 +41,11 @@ def status():
 
 @app.route("/api/add_files", methods=["POST"])
 def new_patient():
+    """ Called to return the medical record numbers in the database
+
+    This is a "POST" route used to .
+    """
     in_data = request.get_json()
-    error_string, status_code = \
-        validate_input(in_data, expected_input)
-    if error_string is not True:
-        return error_string, status_code
     answer = new_or_old(in_data)
     return answer
 
@@ -152,6 +152,9 @@ def validate_input(in_data, expected_input):
 
 
 def new_or_old(in_data):
+    error_string, status_code = validate_input(in_data, expected_input)
+    if error_string is not True:
+        return error_string, status_code
     if not find_patient(in_data["record_number"]):
         # Patient does not already exist in database
         add_database_entry(in_data["patient_name"],
