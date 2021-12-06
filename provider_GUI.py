@@ -3,17 +3,34 @@ from tkinter import ttk, filedialog, messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 import json
-from cloud_server import b64_to_ndarray, get_index, \
+from cloud_client import b64_to_ndarray, get_index, \
     resize_image, b64_string_to_file, process_b64
 
 server = "http://127.0.0.1:5000"
 
 
 def design_window():
-    """
-    Function to house the entire GUI framework
-    """
+    """Creates the provider-side GUI window
 
+        A GUI window is created that is the providers' way of accessing
+        the database storing all the information uploaded through the
+        patient-side GUI. It allows providrs to see all patient medical
+        record numbers corresponding to entries in the database through
+        a drop down menu. Upon selection of one, the relevant information
+        for that patient will be displayed in the GUI, including the
+        patient's name, medical record number, latest heart rate, the
+        date and time of the last ecg uploaded, and the trace of the most
+        recent ECG. Also, the drop down menus for medical image and
+        historical ECG selection all update as well to reflect those of
+        the current selected patient. Whenever a selection is made on
+        one of those drop down menus, the corresponding image is displayed.
+        Each image has a save button underneath to allow users to save the
+        image locally to their device with a desired file name. The
+        GUI refreshes the information available every 10 seconds by
+        making requests to the server to access the database, in case
+        any information changes or new information is uploaded. When this
+        occurs, all the relevant information is updated in the GUI.
+    """
     def cancel_cmd():
         """
         Closes the GUI
@@ -262,6 +279,7 @@ def design_window():
         .grid(column=0, row=4, sticky='w', padx=20, pady=20)
     hrlabel = tk.StringVar()
     hrlabel.set(patient_info["heart_rates"][-1])
+
     ttk.Label(textvariable=hrlabel)\
         .grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
@@ -270,6 +288,7 @@ def design_window():
         .grid(column=0, row=6, sticky='w', padx=20, pady=20)
     dtlabel = tk.StringVar()
     dtlabel.set(patient_info["datetimes"][-1])
+    dtlabel.set("")
     ttk.Label(textvariable=dtlabel)\
         .grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
@@ -306,6 +325,7 @@ def design_window():
     tk_medical_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_medical_nd))
     medical_image_label = ttk.Label(root, image=tk_medical_image)
+    medical_image_label = ttk.Label(root, image="")
     medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
@@ -314,6 +334,7 @@ def design_window():
     tk_latest_ecg = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
+    latest_ecg_image_label = ttk.Label(root, image="")
     latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
@@ -322,6 +343,7 @@ def design_window():
     tk_ecg_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
+    ecg_image_label = ttk.Label(root, image="")
     ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)
 
