@@ -27,7 +27,7 @@ def initialize_server():
                         filemode='w',
                         level=logging.DEBUG)
     print("Connecting to MongoDB...")
-    connect("mongodb+srv://pdijour:mongopassword@bme547.qubox.mongodb.net/"
+    connect("mongodb+srv://pdijour:mongopassword@bme547.vwsmd.mongodb.net/"
             "final_project?retryWrites=true&w=majority")
     print("Connection attempt finished.")
 
@@ -468,4 +468,4 @@ def retrieve_all_info(id_no):
 
 if __name__ == '__main__':
     initialize_server()
-    app.run()
+    app.run(host="0.0.0.0", port=5002)
