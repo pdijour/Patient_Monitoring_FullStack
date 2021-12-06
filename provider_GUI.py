@@ -279,6 +279,7 @@ def design_window():
         .grid(column=0, row=4, sticky='w', padx=20, pady=20)
     hrlabel = tk.StringVar()
     hrlabel.set(patient_info["heart_rates"][-1])
+
     ttk.Label(textvariable=hrlabel)\
         .grid(column=1, row=4, sticky='w', padx=20, pady=20)
 
@@ -287,6 +288,7 @@ def design_window():
         .grid(column=0, row=6, sticky='w', padx=20, pady=20)
     dtlabel = tk.StringVar()
     dtlabel.set(patient_info["datetimes"][-1])
+    dtlabel.set("")
     ttk.Label(textvariable=dtlabel)\
         .grid(column=1, row=6, sticky='w', padx=20, pady=20)
 
@@ -323,6 +325,7 @@ def design_window():
     tk_medical_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_medical_nd))
     medical_image_label = ttk.Label(root, image=tk_medical_image)
+    medical_image_label = ttk.Label(root, image="")
     medical_image_label.configure(image=tk_medical_image)
     medical_image_label.grid(column=3, row=1, rowspan=4, columnspan=2)
 
@@ -331,6 +334,7 @@ def design_window():
     tk_latest_ecg = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     latest_ecg_image_label = ttk.Label(root, image=tk_latest_ecg)
+    latest_ecg_image_label = ttk.Label(root, image="")
     latest_ecg_image_label.configure(image=tk_latest_ecg)
     latest_ecg_image_label.grid(column=0, row=7, columnspan=2)
 
@@ -339,6 +343,7 @@ def design_window():
     tk_ecg_image = ImageTk.\
         PhotoImage(image=Image.fromarray(resized_ecg_nd))
     ecg_image_label = ttk.Label(root, image=tk_ecg_image)
+    ecg_image_label = ttk.Label(root, image="")
     ecg_image_label.configure(image=tk_ecg_image)
     ecg_image_label.grid(column=3, row=7, columnspan=2)
 
