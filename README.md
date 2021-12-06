@@ -4,15 +4,13 @@ Patient Monitoring Client/Server Project
 
 BME 547 Final Project - Michael Tian and Phoebe Dijour
 
-A detailed README describing the final performance and state of your project. This should include a basic instruction manual for your GUI clients, an API reference guide for your server, and a description of your database structure.
-
 The purpose of this project is to design a Patient Monitoring System that has a patient-side GUI, a monitoring-station GUI, and a server/database that allows patient data to be uploaded and stored on the server and retrieved for ad-hoc and continuous monitoring. This can be used in a medical setting, where patients and medical professionals can enter medical images and ECG files into a patient-side GUI. This GUI interacts with a server and a database to store patient information. Then, a patient or medical professional can use the monitoring-station GUI to see each patient's medical files, including any timestamped heart rates that were calculated based on the ECG files. Read on for more information about the project.
 
 ## Basic instruction manual
 ### Setting up
 1. The cloud server script will be running on a virtual machine which can be accessed using the following url: `vcm-23074.vm.duke.edu`
 2. Patients will upload their information using the `patient_GUI`, and providers on the other hand will need to have both the `cloud_client` script as well as the `provider_GUI` script.
-3. In order for a provider to user the `provider_GUI`, there should be at least one patient in the database.
+3. In order for a provider to user the `provider_GUI`, there should be at least one patient with all of the Patient fields filled out in the database. If the database is empty, use the `patient_GUI` to add a sample patient.
 
 
 ### Using Patient-Side GUI (patient_GUI.py)
@@ -108,7 +106,7 @@ The following status codes are used in the server:
 
 ## Virtual Machine
 * Hostname: vcm-23074.vm.duke.edu
-* Port: 5001
+* Port: 5002
 
 
 ## MIT License
