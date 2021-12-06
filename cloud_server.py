@@ -468,4 +468,4 @@ def retrieve_all_info(id_no):
 
 if __name__ == '__main__':
     initialize_server()
-    app.run(host="0.0.0.0", port=5002)
+    app.run()
